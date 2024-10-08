@@ -1,0 +1,50 @@
+.row-layout-start {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: start;
+}
+  
+.row-layout-space-between {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+}
+
+.project-filter-badgets{
+    background-color: #718096; 
+    color: white; 
+    border-radius: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-left: 5px;
+    min-width:120px;
+    font-size: 10px;
+    max-width: 240px;
+    .close{
+        margin-left: 2px;
+        margin-top: 3px;
+        width: 15px;
+        height: 15px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        &:hover{
+            background-color: black;
+            opacity: 0.2;
+            border-radius: 25px;
+        }
+    }
+}
+
+.row-layout-start-center{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}

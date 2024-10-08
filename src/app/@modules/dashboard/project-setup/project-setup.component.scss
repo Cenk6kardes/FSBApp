@@ -1,0 +1,72 @@
+.setupTitle {
+    font-weight: 600;
+}
+
+.setupLayout {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.setupFirstCol {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroupTitleLayout {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+}
+
+.stepNumber {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3A6CAD;
+    color: white;
+    border-radius: 1rem;
+    width: 24px;
+    height: 24px;
+}
+
+.formGroupTitle {
+    font-weight: 700;
+}
+
+.formSteps {
+    display: flex;
+    gap: 2rem;
+}
+
+.stepLayout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.8rem;
+}
+
+.stepLabel {
+    font-weight: 500;
+}
+
+.emptyDiv {
+    flex: 1;
+}
+
+.buttonLayout {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.stepperStyle {
+    height: fit-content;
+    position: sticky;
+    top: 2.25rem;
+    background-color: transparent;
+}
+
+nb-autocomplete {
+    display: none;
+}

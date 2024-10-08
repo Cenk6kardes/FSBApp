@@ -1,0 +1,59 @@
+.label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2D3748;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+nb-card {
+    border-radius: 4px;
+    border: 1px solid #CBD5E0;
+}
+
+nb-card-body{
+    padding: 1.5rem;
+}
+
+input, nb-select{
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.setting-text {
+    color: #2D3748;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    border-bottom: 1px solid #CBD5E0;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.setting-card {
+    background-color: #E4F0F8;
+}
+
+.setting-card .col-4:last-child .setting-text {
+    border: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-btns {
+    width: 100%;
+    text-align: right;
+}
+
+.form-btns button {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 28px;
+    padding: 6px 24px;
+    margin-left: 12px;
+}
+
+.form-btns button.mat-primary {
+    background-color: #427DBF;
+}

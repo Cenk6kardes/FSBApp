@@ -1,0 +1,129 @@
+.circle {
+    padding-top: 5px;
+    display:inline-block;   /* add this */
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #BDD9F0; 
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.drop-above {
+    border-top: 10px solid #e8e3e3;
+    margin-top: -10px;
+  }
+  
+  .drop-below {
+    border-bottom: 10px solid #e8e3e3;
+    margin-bottom: -10px;
+  }
+  
+  .drop-center {
+    background-color: #e8e3e3;
+  }
+
+  .example-tree-progress-bar {
+    margin-left: 30px;
+  }
+  
+  .example-tree-nested-node {
+    padding-left: 30px;
+  }
+  
+  mat-tree {
+    margin-left: 40px;
+  }
+  .mat-tree-node {
+    padding: 0;
+    background-color: white;
+    border-style: none;
+  }  
+  
+  .mat-nested-tree-node {
+    top: -24px;
+  }
+  
+  ul,
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  li.example-tree-container {
+    border-bottom: 0;
+  }
+  
+  ul {
+    padding-left: 40px;
+  }
+  
+  li {
+    // border: 1px inset rgb(143, 137, 137);
+    // border-width: 0 0 1px 1px;
+    position: relative;
+  }
+  
+  li.mat-tree-node,
+  li div {
+    margin: 0;
+    position: relative;
+  }
+  
+  li ul {
+    border-top: 1px inset grey;
+    margin-left: -40px;
+    padding-left: 60px;
+  }
+  
+  .mat-nested-tree-node:last-child ul {
+    border-left: 1px solid white;
+    margin-left: -41px;
+  }
+  
+  .mat-icon-button {
+    z-index: 100;
+  }
+
+ .node-style0,
+ .node-style0-balance {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+ }
+
+ .node-style1,
+ .node-style2-balance {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.node-style2,
+.node-style2-balance {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+}
+ 
+.node-btn0 {
+  background-color: #E4F0F8
+}
+
+.node-btn1 {
+  background-color: #EDF2F7
+}
+
+.node-btn0-balance {
+  background-color: #E4F0F8
+}
+
+.node-btn1-balance {
+  background-color: #edf2f7;
+}
+  
+.totalNode {
+  font-weight: 600;
+}  

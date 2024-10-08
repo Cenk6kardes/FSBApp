@@ -1,0 +1,187 @@
+.full-width{
+    width: 100%;
+}
+
+.row-layout-start{
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: start;
+}
+
+.row-layout-space-between{
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+}
+
+.column-layout-start{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start
+}
+
+.summary-section-container{
+    margin-top:10px;
+}
+
+.summary-box{
+    box-sizing: border-box;
+    width: 365px;
+    height: 298px;
+    background: #FFFFFF;
+    border: 1px solid #CBD5E0;
+    border-radius: 4px;
+}
+
+.green-bg {
+    background-image: url(../../../../../../assets/images/time-graphic.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: 0 130px;
+}
+
+.summary-box-column-container{
+    width: 365px;
+    height: 298px;
+}
+
+.summary-box-half{
+    box-sizing: border-box;
+    width: 365px;
+    height: 141px;
+    background: #FFFFFF;
+    border: 1px solid #CBD5E0;
+    border-radius: 4px;
+}
+
+.column-layout-space-between{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: space-between;
+}
+
+.summary-box-header{
+    height: 22px;
+    font-family: 'Inter';
+    font-weight: bolder;
+    font-size: 18px;
+    line-height: 22px;
+    color: #2D3748;
+    margin-top:15px;
+    margin-left:20px;
+    margin-bottom: 30px;
+}
+
+.user-list{
+    margin-left: 15px;
+    margin-top:10px;
+    height: 100%;
+    overflow-y: scroll;
+    width: calc(100% - 15px);
+}
+
+nb-user {
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+
+.row-layout-space-around{
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-around;
+}
+
+.month-font{
+    height: 22px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #2D3748;
+    margin-left: 5px;
+}
+
+.summary-header-information{
+    width: 70px;
+    height: 20px;
+    background: #427DBF;
+    border-radius: 4px;
+    text-align: center;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    color: white;
+    padding-top: 2px;
+    margin-left: 10px;
+    margin-top: -15px;
+}
+
+.row-layout-start-center{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}
+
+.quarterly-class{
+    margin-left:15px;
+    margin-bottom:10px;
+}
+
+.time-graphic{
+    content:url(../../../../../../assets/images/time-graphic.png);
+}
+
+.time-graphic-annually{
+    margin-top: 35px;
+}
+
+@media only screen and (min-width: 1600px) and (max-width: 1700px) {
+    .summary-box{
+        width: 400px;
+    }
+}
+
+@media only screen and (min-width: 1701px) and (max-width: 1800px) {
+    .summary-box{
+        width: 435px;
+    }
+}
+
+@media only screen and (min-width: 1801px) and (max-width: 1900px) {
+    .summary-box{
+        width: 470px;
+    }
+}
+
+@media only screen and (min-width: 1901px) and (max-width: 2000px) {
+    .summary-box{
+        width: 505px;
+    }
+}
+
+@media only screen and (min-width: 2001px) and (max-width: 2200px) {
+    .summary-box{
+        width: 540px;
+    }
+}
+
+@media only screen and (min-width: 2201px) and (min-width: 2600px) {
+    .summary-box{
+        width: 600px;
+    }
+}
+
+@media only screen and  (min-width: 2600px) {
+    .summary-box{
+        width: 620px;
+    }
+}

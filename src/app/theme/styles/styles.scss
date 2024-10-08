@@ -1,0 +1,231 @@
+// this is our just created themes.scss file, make sure the path to the file is correct
+@use './themes.scss' as *;
+
+// framework component styles
+@use '@nebular/theme/styles/globals' as *;
+
+@import './sharestyles.scss';
+
+// install the framework styles
+// @include nb-install() {
+//   @include nb-theme-global();
+// }
+@import "~@ng-select/ng-select/themes/default.theme.css";
+// @import "~@ng-select/ng-select/themes/material.theme.css";
+
+
+@include nb-install-component() {
+
+  .footer-btn {
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .font-row {
+    &:first-child {
+      margin-bottom: 2rem;
+    }
+
+    .header {
+      align-items: baseline;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .headings-card {
+    h1 {
+      margin: 0;
+    }
+
+    .header {
+      padding-bottom: 0.675rem;
+      margin-bottom: 0.675rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid nb-theme(divider-color);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    div:first-child {
+      flex: 2;
+      -ms-flex: 2 1 auto;
+      line-height: 1;
+      align-items: flex-end;
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin-bottom: 0;
+      }
+    }
+
+    .variants {
+      flex: 1;
+      -ms-flex: 1 1 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+
+      span {
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
+    }
+
+    .detail {
+      flex: 1;
+      display: flex;
+    }
+  }
+
+  .colors {
+    display: flex;
+    flex-direction: column;
+
+    .item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.25rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .color {
+      width: 86px;
+      height: 60px;
+      border-top-right-radius: 1rem;
+      border-bottom-left-radius: 1rem;
+      @include nb-ltr(margin-right, 1rem);
+      @include nb-rtl(margin-left, 1rem);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .text-link {
+    color: nb-theme(link-text-color);
+  }
+
+  .bg-link {
+    background: nb-theme(link-text-color);
+  }
+
+  .bg-heading {
+    background: nb-theme(text-basic-color);
+  }
+
+  .bg-body {
+    background: nb-theme(text-basic-color);
+  }
+
+  .bg-hint {
+    background: nb-theme(text-hint-color);
+  }
+
+  .bg-link {
+    background: nb-theme(link-text-color);
+  }
+
+  @each $status in nb-get-statuses() {
+    .bg-status-#{$status} {
+      background: nb-theme(text-#{$status}-color);
+    }
+  }
+
+  .form-inline [fullWidth] {
+    flex: 1;
+  }
+
+  .form-inline>* {
+    margin: 0 1.5rem 1.5rem 0;
+  }
+
+  nb-card.inline-form-card nb-card-body {
+    padding-bottom: 0;
+  }
+}
+//Sidebar Styles
+.menu-sidebar .main-container{
+  top:0 !important;
+  max-width: 230px;
+}
+
+nb-menu .menu-item{
+  border:none !important;
+  margin-left: 16px;
+  margin-bottom: 9px;
+}
+
+nb-menu .menu-icon{
+  margin-right: 15px !important;
+}
+
+nb-menu .menu-item a, nb-menu .menu-item .menu-icon{
+  color:#CBD5E0 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  opacity: 0.8;
+}
+
+nb-menu .menu-item a.active, nb-menu .menu-item a.active .menu-icon{
+  color:#FFFFFF !important;
+  opacity: 1;
+}
+
+nb-menu .menu-item a.active:before{
+  content: "";
+  position: absolute;  
+  height: 56px;
+  width: 9px;
+  background: #427DBF;
+  border-radius: 4px;
+  left: 3px;
+  color: #FFFFFF;
+}
+
+.selectt{
+  padding-right:2rem;
+  *{
+    background-color: #FFFFFF !important;
+    font-family: 'Inter'; 
+    font-weight: 400 !important;
+    font-size: 14px !important;
+  }
+
+  label {
+    margin-bottom: 8px;
+    font-weight: 500 !important;
+  }
+}

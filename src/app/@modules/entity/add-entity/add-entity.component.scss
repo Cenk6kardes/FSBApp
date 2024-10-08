@@ -1,0 +1,34 @@
+@import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '/src/app/theme/styles/themes.scss';
+
+@include nb-install-component() {
+    nb-card.dialog {
+        width: 40vw;
+
+        nb-card-footer {
+            button {
+                margin-right: 0.5rem;
+            }
+        }
+
+        nb-card-body {
+            .hrdivider {
+                position: relative;
+                width: 100%;
+            }
+
+            .hrdivider span {
+                position: absolute;
+                justify-self: center;
+                top: -11px;
+                left: 33%;
+                background: #fff;
+                padding: 0 1rem;
+                font-style: italic;
+                font-size: 0.8rem;
+            }
+        }
+        
+    }
+}

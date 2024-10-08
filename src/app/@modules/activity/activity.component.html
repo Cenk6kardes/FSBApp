@@ -1,0 +1,30 @@
+<div class='row'>
+  <div class="action-row">
+    <button class="primary-button" nbButton size="small" status="primary"
+            (click)="downloadReport()">
+      <nb-icon icon="download-outline"></nb-icon>
+      Download Report
+    </button>
+    <div *ngIf="nameCriteria.size != 0" class="filtered-by">
+      <svg class="filtered-by-icon"></svg>
+      <span>Filtered by:</span>
+    </div>
+    <div *ngFor="let name of nameCriteria">
+      <button class="filter-criteria" nbButton size="tiny" status="primary"
+              (click)="this.activityChart.filter('username', name, true)">User: {{name}}
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </div>
+    <div *ngIf="nameCriteria.size != 0" class="clear-filter">
+      <button mat-flat-button [disableRipple]="true" (click)="this.activityChart.filter('username', '', false)">
+        <svg class="clear-filter-icon"></svg>
+        Clear All
+      </button>
+    </div>
+  </div>
+</div>
+<div class="table-wrapper">
+  <nb-card>
+    <app-activity-chart #activityChart (checkedUser)="getFilterCriteria($event)"></app-activity-chart>
+  </nb-card>
+</div>

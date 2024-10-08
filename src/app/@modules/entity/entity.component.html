@@ -1,0 +1,11 @@
+<div class="col-12">
+    <div class='row'>
+        <div class="templateBtnDiv" *nbIsGranted="['create', 'engagementAndEntity']">
+            <button class="transparent-button" nbButton size="large" status="primary" [nbSpinner]="downloading"
+                (click)="downloadTemplate()">Download Template</button>
+            <button class="primary-button" nbButton size="large" status="primary" [nbSpinner]="uploading"
+                (click)="openDialog()">Upload Template</button>
+        </div>
+    </div>
+    <app-entity-view [engagementMap]="engagementMap"></app-entity-view>
+</div>

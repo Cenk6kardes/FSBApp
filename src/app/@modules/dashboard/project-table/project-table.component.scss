@@ -1,0 +1,39 @@
+@import "src/styles.scss";
+
+#projectTable .ngx-table__table--normal > tbody > tr {
+    cursor: pointer !important;
+  }
+
+#projectTable .ngx-table__table--normal > tbody > tr > td:nth-child(7) .ng-star-inserted,
+#projectTable .ngx-table__table--normal > tbody > tr > td:nth-child(4) .ng-star-inserted  {
+  word-spacing: 100vw;
+  color: #718096;
+}
+
+#projectTable .ng-star-inserted img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.status-positions {
+  display: flex;
+  align-items: center;
+}
+
+.alert-icon {
+  font-size: 13px !important;
+  margin-left: 5px;
+}
+
+.alert-icon svg {
+  fill: #DF5166;
+}
+
+.md-drppicker.double {
+  width: 500px !important;
+
+  svg {
+    vertical-align: sub !important;
+  }
+}

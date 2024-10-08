@@ -1,0 +1,164 @@
+// @import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '../../styles/themes';
+
+@include nb-install-component() {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    width: calc(#{nb-theme(sidebar-width)} - #{nb-theme(header-padding)});
+  }
+
+  nb-action {
+    height: auto;
+    display: flex;
+    align-content: center;
+  }
+
+ .user-details {
+  padding: 0 2rem 0 1.25rem;
+ }
+
+  nb-user {
+    cursor: pointer;
+  }
+
+  ::ng-deep nb-search button {
+    padding: 0!important;
+  }
+
+  .headerNav {
+    width: 100% !important;
+    padding: 2.3rem 0 .8rem 0;
+  }
+
+  .headerTitle {
+    margin: 0 0 0 2.25rem;
+    font: 600 28px/32px Inter, sans-serif;
+  }
+
+  .backPage {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding-left: 2.25rem;
+
+    .backArrow {
+      color: #427DBF;
+    }
+  }
+
+  .header-container {
+    display: flex;
+    align-items: center;
+    width: auto;
+    justify-content: space-between;
+    .actions{
+      justify-self: flex-end;
+    }
+
+    .sidebar-toggle {
+      @include nb-ltr(padding-right, 1.25rem);
+      @include nb-rtl(padding-left, 1.25rem);
+      text-decoration: none;
+      color: nb-theme(text-hint-color);
+      nb-icon {
+        font-size: 1.75rem;
+      }
+    }
+
+    .logo {
+      padding: 0 1rem;
+      font-size: 1.75rem;
+      @include nb-ltr(border-left, 1px solid nb-theme(divider-color));
+      @include nb-rtl(border-right, 1px solid nb-theme(divider-color));
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .pic {
+      height: 2rem;
+      
+    }
+    
+  }
+  
+  @include media-breakpoint-down(sm) {
+    .control-item {
+      display: none;
+    }
+    .user-action {
+      border: none;
+      padding: 0;
+    }
+  }
+
+  @include media-breakpoint-down(is) {
+    nb-select {
+      display: none;
+    }
+  }
+}
+
+.warningDiv {
+  position: relative;
+  height: auto;
+  border: none;
+  border-top: 4px solid #D83f4f;
+  background-color: #FBE4E8;
+  min-width: 22rem;
+  justify-content: center;
+  border-radius: 0.25rem;
+  padding:1rem;
+  display: flex;
+  text-align: center;
+  z-index: 2;
+  gap: 1rem;
+  align-items: center;
+  box-shadow: 0 0.5rem 1rem 0 rgb(44 51 73 / 10%);
+  flex: 0 0 100%;
+
+  div {
+      //flex: 0 0 95%;
+  }
+
+  nb-icon.alert-circle-outline {
+      color: #D83F4F;
+      //flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+  }
+
+  nb-icon.close-outline {
+      position: absolute;
+      color: #2D3748;
+      width: 20px;
+      height: 20px;
+      top: 5px;
+      right: 5px;
+      cursor: pointer;
+  }
+
+  h4, p {
+      color: #2D3748;
+      margin-bottom: 0;
+      font-family: Open Sans, sans-serif;
+      
+  }
+
+  h4 {
+      font-size: 1rem;
+      font-weight: 600;
+  }
+
+  p {
+      font-size: 0.8725rem;
+      font-weight: 400;
+      line-height: 1.25rem;
+  }
+}

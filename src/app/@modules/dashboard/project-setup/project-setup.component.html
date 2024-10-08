@@ -1,0 +1,187 @@
+<h1 class="setupTitle">Project Set-Up</h1>
+<div class="setupLayout">
+  <div class="setupFirstCol" [nbSpinner]="createClicked" nbSpinnerSize="large">
+    <form [formGroup]="newProject" (ngSubmit)="addNewProject()">
+      <nb-card [nbSpinner]="entityLoading">
+        <nb-card-body>
+          <div class="formGroupTitleLayout">
+            <span class="stepNumber">1</span>
+            <h3 class="formGroupTitle">Select Entity & Year</h3>
+          </div>
+          <div class="formSteps" formGroupName="step1">
+            <div class="stepLayout">
+              <label class="stepLabel">Entity*</label>
+              <!-- <nb-select placeholder="Select" (selectedChange)="entityChange($event)" formControlName="entityName"
+                scrollStrategy="reposition"
+                [status]="newProject.get(['step1', 'entityName'])!.touched && newProject.get(['step1', 'entityName'])!.invalid ? 'danger' : 'basic'">
+                <nb-option *ngFor="let entity of entityList$ | async" [value]=entity>{{entity.name}}</nb-option>
+              </nb-select> -->
+              <input formControlName="entityName" nbInput type="text" placeholder="Select"
+                [nbAutocomplete]="autoControl" (keyup)="onChange($event)"
+                [status]="newProject.get(['step1', 'entityName'])!.touched && newProject.get(['step1', 'entityName'])!.invalid ? 'danger' : 'basic'" />
+              <nb-autocomplete #autoControl scrollStrategy="reposition" (selectedChange)="entityChange($event)"
+                [handleDisplayFn]="viewHandle">
+                <nb-option *ngFor="let entity of filteredOptions$ | async" [value]=entity
+                  [disabled]="entity.name === 'No results found'">
+                  {{entity.name}}
+                </nb-option>
+              </nb-autocomplete>
+              <span class="text-danger"
+                *ngIf="newProject.get(['step1', 'entityName'])!.invalid && newProject.get(['step1', 'entityName'])!.touched">*Entity
+                is invalid</span>
+            </div>
+            <div class="stepLayout">
+              <label class="stepLabel">Financial Year*</label>
+              <nb-select placeholder="Select" formControlName="financialYear" scrollStrategy="reposition"
+                [status]="newProject.get(['step1', 'financialYear'])!.touched && newProject.get(['step1', 'financialYear'])!.invalid ? 'danger' : 'basic'">
+                <nb-option *ngFor="let year of financialYear" [value]=year>{{year}}</nb-option>
+              </nb-select>
+              <span class="text-danger"
+                *ngIf="newProject.get(['step1', 'financialYear'])!.invalid && newProject.get(['step1', 'financialYear'])!.touched">*Financial
+                Year is invalid</span>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <nb-card>
+        <nb-card-body>
+          <div class="formGroupTitleLayout">
+            <span class="stepNumber">2</span>
+            <h3 class="formGroupTitle">Select Period</h3>
+          </div>
+          <div class="formSteps" formGroupName="step2">
+            <div class="stepLayout">
+              <label class="stepLabel">Period Start Date*</label>
+              <input nbInput placeholder="Pick Date" formControlName="periodStartDate" [nbDatepicker]="periodStartDate"
+                [status]="newProject.get(['step2', 'periodStartDate'])!.touched && newProject.get(['step2', 'periodStartDate'])!.invalid ? 'danger' : 'basic'">
+              <span class="text-danger"
+                *ngIf="newProject.get(['step2', 'periodStartDate'])!.invalid && newProject.get(['step2', 'periodStartDate'])!.touched">*Period
+                Start Date is invalid</span>
+              <nb-datepicker [date]="periodStartMinDate" (dateChange)="onPeriodStartChange($event)" #periodStartDate
+                [min]="periodStartMinDate" [max]="periodStartMaxDate"></nb-datepicker>
+            </div>
+            <div class="stepLayout">
+              <label class="stepLabel">Period End Date*</label>
+              <input nbInput placeholder="Pick Date" formControlName="periodEndDate" [nbDatepicker]="periodEndDate"
+                [status]="newProject.get(['step2', 'periodEndDate'])!.touched && newProject.get(['step2', 'periodEndDate'])!.invalid ? 'danger' : 'basic'">
+              <span class="text-danger"
+                *ngIf="newProject.get(['step2', 'periodEndDate'])!.invalid && newProject.get(['step2', 'periodEndDate'])!.touched">*Period
+                End Date is invalid</span>
+              <nb-datepicker [date]="periodEndMaxDate" (dateChange)="onPeriodEndChange($event)" #periodEndDate
+                [min]="periodEndMinDate" [max]="periodEndMaxDate"></nb-datepicker>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <nb-card>
+        <nb-card-body>
+          <div class="formGroupTitleLayout">
+            <span class="stepNumber">3</span>
+            <h3 class="formGroupTitle">Select Data Upload Period and Type</h3>
+          </div>
+          <div class="formSteps" formGroupName="step3">
+            <div class="stepLayout">
+              <label class="stepLabel">Period Break*</label>
+              <nb-select placeholder="Select" formControlName="periodBreak" scrollStrategy="reposition"
+                [status]="newProject.get(['step3', 'periodBreak'])!.touched && newProject.get(['step3', 'periodBreak'])!.invalid ? 'danger' : 'basic'">
+                <nb-option *ngFor="let period of periodBreak$ | async" [value]=period>{{period.name}}</nb-option>
+              </nb-select>
+              <span class="text-danger"
+                *ngIf="newProject.get(['step3', 'periodBreak'])!.invalid && newProject.get(['step3', 'periodBreak'])!.touched">*Period
+                Break is invalid</span>
+            </div>
+            <div class="stepLayout">
+              <label class="stepLabel">Project Type*</label>
+              <nb-select placeholder="Select" formControlName="projectType" scrollStrategy="reposition"
+                [status]="newProject.get(['step3', 'projectType'])!.touched && newProject.get(['step3', 'projectType'])!.invalid ? 'danger' : 'basic'">
+                <nb-option *ngFor="let type of projectType$ | async" [value]=type>{{type.name}}</nb-option>
+              </nb-select>
+              <span class="text-danger"
+                *ngIf="newProject.get(['step3', 'projectType'])!.invalid && newProject.get(['step3', 'projectType'])!.touched">*Project
+                Type is invalid</span>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <nb-card>
+        <nb-card-body>
+          <div class="formGroupTitleLayout">
+            <span class="stepNumber">4</span>
+            <h3 class="formGroupTitle">Select COA</h3>
+          </div>
+          <div class="formSteps" formGroupName="step4">
+            <div class="stepLayout">
+              <label class="stepLabel">COA*</label>
+              <nb-select placeholder="Select" formControlName="coa" scrollStrategy="reposition"
+                [status]="newProject.get(['step4', 'coa'])!.touched && newProject.get(['step4', 'coa'])!.invalid ? 'danger' : 'basic'">
+                <nb-option *ngFor="let type of coaTypeDropDown" [value]=type>{{type.name}}</nb-option>
+                <nb-option-group title="Global COA">
+                  <nb-option *ngFor="let globalCoa of globalCoaList$ | async" [value]=globalCoa>{{globalCoa.name}}
+                  </nb-option>
+                </nb-option-group>
+                <nb-option-group title="Engagement COA">
+                  <nb-option *ngFor="let engCoa of engCoaList$ | async" [value]=engCoa>{{engCoa.name}}</nb-option>
+                </nb-option-group>
+              </nb-select>
+              <span class="text-danger"
+                *ngIf="newProject.get(['step4', 'coa'])!.invalid && newProject.get(['step4', 'coa'])!.touched">*COA is
+                invalid</span>
+            </div>
+            <div class="emptyDiv"></div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <nb-card>
+        <nb-card-body>
+          <div class="formGroupTitleLayout">
+            <span class="stepNumber">5</span>
+            <h3 class="formGroupTitle">Select Due Dates</h3>
+          </div>
+          <div class="formSteps" formGroupName="step5">
+            <div class="stepLayout">
+              <label class="stepLabel">Due Date (TB Upload)*</label>
+              <input nbInput placeholder="Pick Date" formControlName="tbUpload" [nbDatepicker]="tbDueDate"
+                [status]="newProject.get(['step5', 'tbUpload'])!.touched && newProject.get(['step5', 'tbUpload'])!.invalid ? 'danger' : 'basic'">
+              <span class="text-danger"
+                *ngIf="newProject.get(['step5', 'tbUpload'])!.invalid && newProject.get(['step5', 'tbUpload'])!.touched">*Due
+                Date (TB Upload) is invalid</span>
+              <nb-datepicker [date]="tbUploadMinDate" (dateChange)="onTBUploadChange($event)" #tbDueDate
+                [min]="tbUploadMinDate"></nb-datepicker>
+            </div>
+            <div class="stepLayout">
+              <label class="stepLabel">Due Date (FS Review)*</label>
+              <input nbInput placeholder="Pick Date" formControlName="fsReview" [nbDatepicker]="fsDueDate"
+                [status]="newProject.get(['step5', 'fsReview'])!.touched && newProject.get(['step5', 'fsReview'])!.invalid ? 'danger' : 'basic'">
+              <span class="text-danger"
+                *ngIf="newProject.get(['step5', 'fsReview'])!.invalid && newProject.get(['step5', 'fsReview'])!.touched">*Due
+                Date (FS Review) is invalid</span>
+              <nb-datepicker [date]="fsReviewMinDate" (dateChange)="onFSReviewChange($event)" #fsDueDate
+                [min]="fsReviewMinDate"></nb-datepicker>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <div class="buttonLayout">
+        <button type="button" mat-stroked-button (click)="cancel()">Cancel</button>
+        <button type="submit" mat-flat-button color="primary" [disabled]="newProject.invalid">Create Project</button>
+      </div>
+    </form>
+  </div>
+  <mat-stepper class="stepperStyle" orientation="vertical" linear>
+    <mat-step completed="false" editable="false">
+      <ng-template matStepLabel>Select Entity & Year</ng-template>
+    </mat-step>
+    <mat-step completed="false" editable="false">
+      <ng-template matStepLabel>Select Period</ng-template>
+    </mat-step>
+    <mat-step completed="false" editable="false">
+      <ng-template matStepLabel>Select Data Upload Period and Type</ng-template>
+    </mat-step>
+    <mat-step completed="false" editable="false">
+      <ng-template matStepLabel>Select COA</ng-template>
+    </mat-step>
+    <mat-step completed="false" editable="false">
+      <ng-template matStepLabel>Select Due Dates</ng-template>
+    </mat-step>
+  </mat-stepper>
+</div>

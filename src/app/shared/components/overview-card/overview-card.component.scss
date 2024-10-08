@@ -1,0 +1,244 @@
+// @forward '@nebular/theme/styles/theming';
+// @use '@nebular/theme/styles/theming' as *;
+// @use '@nebular/theme/styles/themes/dark';
+
+$nb-enable-css-custom-properties: true;
+
+.card-header--text {
+    font-size: 23px;
+    line-height: 26px;
+    color: #2D3748;
+    font-weight: 800;
+}
+
+.overview-count {
+    border: 1px solid #A0AEC0;
+    margin-left: 10px;
+    border-radius: 5px;
+    padding: 0px 4px;
+}
+
+.overview-count img {
+    height: 8px;
+    margin-right: 3px;
+    fill: #A0AEC0;
+}
+
+.overview-count span {
+    font-size: 12px;
+    line-height: 12px;
+    color: #A0AEC0;
+    font-weight: 500;
+}
+
+.project-count__text {
+    font-size: 28px;
+    line-height: 34px;
+    font-weight: 700;
+    color: #2D3748;
+    margin-bottom: 0;
+}
+
+.project-count__header {
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 500;
+    color: #718096;
+    margin-bottom: 0;
+}
+
+.project-count__box {
+    background: #FFFFFF;
+    border: 1px solid #CBD5E0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.project-count__body{
+    padding: 1rem 1.5rem;
+}
+
+.filter-icons {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+.project-count__box.selected-0{
+    background-color: #718096 !important;
+}
+
+.project-count__box.selected-0 .project-count__header,
+.project-count__box.selected-0 .project-count__text,
+.project-count__box.selected-1 .project-count__header,
+.project-count__box.selected-1 .project-count__text,
+.project-count__box.selected-2 .project-count__header,
+.project-count__box.selected-2 .project-count__text,
+.project-count__box.selected-3 .project-count__header,
+.project-count__box.selected-3 .project-count__text,
+.project-count__box.selected-4 .project-count__header,
+.project-count__box.selected-4 .project-count__text,
+.project-count__box.selected-5 .project-count__header,
+.project-count__box.selected-5 .project-count__text {
+    color:#FFFFFF
+}
+
+.project-count__box.selected-0 .overview-count {
+    border-color:#E2E8F0
+}
+
+.project-count__box.selected-0 .overview-count span {
+    color:#E2E8F0
+}
+
+.project-count__box.selected-0 .overview-count img {
+    filter: brightness(0) saturate(100%) invert(92%) sepia(7%) saturate(218%) hue-rotate(176deg) brightness(101%) contrast(92%);
+}
+
+.project-count__box.selected-1{
+    background-color: #4DB5DE !important;
+}
+
+.project-count__box.selected-1 .overview-count {
+    border-color:#BDEDFF
+}
+
+.project-count__box.selected-1 .overview-count span {
+    color:#BDEDFF
+}
+
+.project-count__box.selected-1 .overview-count img {
+    filter: brightness(0) saturate(100%) invert(84%) sepia(99%) saturate(7448%) hue-rotate(171deg) brightness(103%) contrast(102%);
+}
+
+.project-count__box.selected-2{
+    background-color: #427DBF !important;
+}
+
+.project-count__box.selected-2 .overview-count {
+    border-color:#BDD9F0
+}
+
+.project-count__box.selected-2 .overview-count span {
+    color:#BDD9F0
+}
+
+.project-count__box.selected-2 .overview-count img {
+    filter: brightness(0) saturate(100%) invert(85%) sepia(19%) saturate(363%) hue-rotate(171deg) brightness(97%) contrast(94%);
+}
+
+.project-count__box.selected-3{
+    background-color: #623893 !important;
+}
+
+.project-count__box.selected-3 .overview-count {
+    border-color:#D0C4E0
+}
+
+.project-count__box.selected-3 .overview-count span {
+    color:#D0C4E0
+}
+
+.project-count__box.selected-3 .overview-count img {
+    filter: brightness(0) saturate(100%) invert(85%) sepia(28%) saturate(287%) hue-rotate(214deg) brightness(92%) contrast(90%);
+}
+
+.project-count__box.selected-4{
+    background-color: #EB8926 !important;
+}
+
+.project-count__box.selected-4 .overview-count {
+    border-color:#FADEB5
+}
+
+.project-count__box.selected-4 .overview-count span {
+    color:#FADEB5
+}
+
+.project-count__box.selected-4 .overview-count img {
+    filter: brightness(0) saturate(100%) invert(92%) sepia(12%) saturate(1844%) hue-rotate(310deg) brightness(113%) contrast(96%);
+}
+
+.project-count__box.selected-5{
+    background-color: #009572 !important;
+}
+
+.project-count__box.selected-5 .overview-count {
+    border-color:#A6E5D8
+}
+
+.project-count__box.selected-5 .overview-count span {
+    color:#A6E5D8
+}
+
+.project-count__box.selected-5 .overview-count img {
+    filter: brightness(0) saturate(100%) invert(93%) sepia(11%) saturate(863%) hue-rotate(107deg) brightness(97%) contrast(85%);
+}
+
+.project-status__box {
+    background: #FFFFFF;
+    border: 1px solid #CBD5E0;
+    border-radius: 4px;
+}
+
+.project-status__content {
+    justify-content: space-between;
+}
+
+.project-status__content .project-status__status {
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 500;
+    color: #718096;
+}
+
+.project-status__content .project-status__percent {
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 500;
+    color: #2D3748;
+}
+
+.project-status__content .project-status__header {
+    color: #2D3748;
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.project-status__content .project-status__overdue {
+    background-color: #E76B7F;
+    padding: 2px 8px;
+    font-size: 12px;
+    line-height: 17px;
+    border-radius: 4px;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+.margin-bottom-16 {
+    margin-bottom: 16px;
+}
+
+::ng-deep nb-progress-bar.bar-section-00 .progress-value {
+    background-color: #9476B7 !important;
+} 
+
+::ng-deep nb-progress-bar.bar-section-01 .progress-value {
+    background-color: #B29DCC !important;
+} 
+::ng-deep nb-progress-bar.bar-section-02 .progress-value {
+    background-color: #D0C4E0 !important;
+}
+
+::ng-deep nb-progress-bar.bar-section-10 .progress-value {
+    background-color: #F4B258 !important;
+} 
+
+::ng-deep nb-progress-bar.bar-section-11 .progress-value {
+    background-color: #F7C886 !important;
+} 
+::ng-deep nb-progress-bar.bar-section-12 .progress-value {
+    background-color: #FADEB5 !important;
+} 

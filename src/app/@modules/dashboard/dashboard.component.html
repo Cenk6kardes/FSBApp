@@ -1,0 +1,69 @@
+<router-outlet (activate)='onActivate($event)' (deactivate)='onDeactivate($event)'></router-outlet>
+
+<div *ngIf="!routerActive" nbSpinnerSize="giant">
+  <div class="row">
+    <div class="col-8">
+      <app-projects-overview (filterEvent)="onFilterFired($event)" [filterItems]="dummyItems"
+        [statusItems]="dummyStatus"></app-projects-overview>
+    </div>
+    <div class="col-4">
+      <app-notes></app-notes>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <nb-card>
+        <nb-card-header>
+          <div class="row">
+            <div class="col-1">
+              <h1 class="card-header--text">Projects</h1>
+            </div>
+            <div class="col-7">
+              <div class="action-row">
+                <div *ngIf="nameCriteria.size !== 0" class="filtered-by">
+                  <svg class="filtered-by-icon"></svg>
+                  <span>Filtered by:</span>
+                </div>
+                <div *ngFor="let name of nameCriteria">
+                  <button class="filter-criteria" nbButton size="tiny" status="primary"
+                    (click)="this.projectChart.filter('status', name, true)">
+                    Status: {{ name }}
+                    <nb-icon icon="close-outline"></nb-icon>
+                  </button>
+                </div>
+                <div *ngIf="nameCriteria.size !== 0" class="clear-filter">
+                  <button mat-flat-button [disableRipple]="true"
+                    (click)="this.projectChart.filter('status', '', false)">
+                    <svg class="clear-filter-icon"></svg>
+                    Clear All
+                  </button>
+                </div>
+              </div>
+              <div class="row-layout-start-center">
+                <app-project-filter style="margin-top: 5px;" (deleteFilterEmitter)="onDeleteFilterEvent($event)"
+                  [projectFilters]="projectFilters"></app-project-filter>
+              </div>
+            </div>
+            <div class="col-4 text-right">
+              <button nbButton status="basic" size="medium" class="export-btn" (click)="downloadReport()">
+                <nb-icon icon="download"></nb-icon>Export
+              </button>
+              <a (click)="goProjectSetup()" nbButton class="add-new-btn" size="medium"
+                *nbIsGranted="['create', 'project']">
+                <nb-icon icon="plus"></nb-icon>Add New Project
+              </a>
+            </div>
+          </div>
+        </nb-card-header>
+        <div class="row">
+          <div class="col-12">
+            <app-project-table (tableDataLoaded)="onTableDataLoaded($event)" [tableData]="paramTableData"
+              [tableLength]="paramTableData.length" #projectChart (checkedStatus)="getFilterCriteria($event)"
+              [nbSpinner]="loading">
+            </app-project-table>
+          </div>
+        </div>
+      </nb-card>
+    </div>
+  </div>
+</div>

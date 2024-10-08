@@ -1,0 +1,44 @@
+<nb-card>
+  <nb-card-body [nbSpinner]="loading">
+    <nb-tabset fullWidth>
+      <nb-tab tabTitle="Notes">
+        <button class="button-notes" (click)="editNote(operationType.Add)">
+          <nb-icon icon="plus"></nb-icon>
+        </button>
+        <nb-list nbInfiniteList listenWindowScroll [threshold]="500" (bottomThreshold)="loadNext(notes)">
+          <!-- <nb-list-item *ngFor="let note of notes.note; let i = index">
+            <app-list-item [content]="notes.note" [index]="i"></app-list-item>
+          </nb-list-item> -->
+          <nb-list-item *ngFor="let note of notes; let i = index">
+            <span class="note-date">{{ note.createdDate | date }}</span>
+            <p class="note-description" (click)="collapseItem(i)" [ngClass]="
+                collapsableItem == i ? '' : 'note-description__collapse'
+              ">
+              <b>{{ note.title }}</b> {{ note.description }}
+              <span class="note-collapse" *ngIf="note.description.length > 42"><img
+                  src="../../../../assets/images/collapse-img.svg" alt="" />
+                Collapse</span>
+            </p>
+            <div class="note-edit__img" [nbPopover]="editPopup" nbPopoverPlacement="bottom"
+              *nbIsGranted=" note.isGlobal ? ['update', 'globalNote'] : ['update', 'note']">
+              <img src="../../../../assets/images/three_dot.svg" alt="" />
+            </div>
+            <ng-template #editPopup>
+              <nb-card class="margin-bottom-0 note-edit__box">
+                <nb-card-header (click)="editNote(operationType.Update, note, i)">
+                  <nb-icon icon="edit-outline"></nb-icon>Edit
+                </nb-card-header>
+                <nb-card-header (click)="editNote(operationType.Delete, note, i)">
+                  <nb-icon icon="trash-outline"></nb-icon>Delete
+                </nb-card-header>
+              </nb-card>
+            </ng-template>
+          </nb-list-item>
+        </nb-list>
+      </nb-tab>
+      <nb-tab tabTitle="My Project Activity">
+        <app-project-activity></app-project-activity>
+      </nb-tab>
+    </nb-tabset>
+  </nb-card-body>
+</nb-card>

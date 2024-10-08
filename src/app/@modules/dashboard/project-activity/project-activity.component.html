@@ -1,0 +1,9 @@
+<nb-list class="myActivityItemList" [nbSpinner]="loading">
+    <nb-list-item class="myActivityItem" *ngFor="let activity of activityService.userActivities | async; let i = index">
+      <span class="note-date">{{ activity.createdDate | date: 'MMM d, HH:mm' }}</span>
+      <p class="note-description">
+        <span class="activity-status"></span><b>{{ activity.projectName }}</b>
+        {{ activity.activityTitle }}
+      </p>
+    </nb-list-item>
+</nb-list>

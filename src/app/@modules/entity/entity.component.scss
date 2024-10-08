@@ -1,0 +1,34 @@
+@import "src/styles.scss";
+
+.my-card {
+    background: lavender;
+    width: 100%;
+    height: 100%;
+}
+
+.templateBtnDiv {
+    flex: auto;
+    flex-direction: row;
+
+    button{
+        margin-right: 0.5rem;
+    }
+    input{
+        margin-right: 0.5rem;
+    }
+}
+
+.headerForm {
+    display: flex;
+    flex-direction: row;
+}
+
+// nb-card-body {
+//     overflow: visible;
+//     padding-top: 0;
+
+//     > * {
+//       margin-top: 1rem;
+//     }
+//   }
+

@@ -1,0 +1,145 @@
+<div class="col-12" [nbSpinner]="loading">
+  <ngx-table [configuration]="configuration" [data]="data" #table [columns]="columns" [pagination]="pagination" (change)="updateTotalItems()">
+  </ngx-table>
+  <mat-paginator
+    [hidden]="type === 1"
+    [length]="paginationEngCoaTotalItems"
+    [pageSize]="10"
+    (page)="paginationEvent($event)"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+  <mat-paginator
+    [hidden]="type === 2"
+    [length]="paginationGlobalCoaTotalItems"
+    [pageSize]="10"
+    (page)="paginationEvent($event)"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+  <ng-template #nameTpl let-row let-rowIndex="rowIndex">
+    <div *ngIf="renameIndex !== rowIndex && row.active">{{ row.name }}</div>
+    <div class="light-row" *ngIf="renameIndex !== rowIndex && !row.active">{{ row.name }}</div>
+    <div *ngIf="renameIndex === rowIndex" [nbSpinner]="renaming">
+      <nb-form-field>
+        <input #inputRename nbInput type="text"
+               [status]="!nameInput.valid && nameInput.touched ? 'danger' : 'primary'" [formControl]="nameInput"
+               [value]="row.name"/>
+        <nb-icon nbSuffix icon="close" (click)="nameInput.setValue('')"></nb-icon>
+      </nb-form-field>
+      <span class="text-danger" *ngIf="!nameInput.valid && nameInput.touched">
+                *Name is required
+            </span>
+    </div>
+  </ng-template>
+
+  <ng-template #countTpl let-row>
+    <div *ngIf="row.active">{{ row.projectCount }}</div>
+    <div class="light-row" *ngIf="!row.active">{{ row.projectCount }}</div>
+  </ng-template>
+
+  <ng-template #activeTpl let-row>
+    <mat-slide-toggle [nbTooltip]="row.active ? 'Deactivate': 'Activate'" color="primary" checked="{{row.active}}"
+                      (change)='toggleStatus($event.checked, row.id)'>
+      <p class="toggle-label" *ngIf="row.active">Active</p>
+      <p class="toggle-label light-row" *ngIf="!row.active">Inactive</p>
+    </mat-slide-toggle>
+  </ng-template>
+
+  <ng-template #engMappingTpl let-row>
+    <!-- <div class="position-relative" *ngIf="row.engagements.length > 0" [nbPopover]="engMapPopTpl"
+        nbPopoverTrigger="hover">
+        <div class="d-flex flex-row">
+            <span class="position-absolute top-100 start-0 badge rounded-pill bg-secondary">
+                {{row.engagements.length}}
+            </span>
+            <p class="position-absolute top-100 end-50">
+                {{row.engagements[0].name}}
+            </p>
+        </div>
+    </div> -->
+    <div *ngIf="row.engagements">
+      <div *ngIf="row.engagements.length > 0" class="mapping" [nbPopover]="engMapPopTpl" nbPopoverTrigger="hover">
+        <span *ngIf="row.active" class="round-chip"> {{row.engagements.length}} </span>
+        <span *ngIf="!row.active" class="disabled-round-chip"> {{row.engagements.length}} </span>
+        <span *ngIf="row.active" class="map-text"> {{row.engagements[0].name}}</span>
+        <span *ngIf="!row.active" class="light-row map-text"> {{row.engagements[0].name}}</span>
+      </div>
+
+      <ng-template #engMapPopTpl>
+        <div class="p-3">
+                    <span *ngFor="let item of row.engagements; let i = index">
+                        <span *ngIf="i+1 < row.engagements.length">{{item.name}}, </span>
+                        <span *ngIf="i+1 === row.engagements.length;">{{item.name}}.</span>
+                    </span>
+        </div>
+      </ng-template>
+    </div>
+  </ng-template>
+
+  <ng-template #ellipsesTpl let-row let-rowIndex="rowIndex">
+    <div *ngIf="renameIndex !== rowIndex && row.active">
+      <nb-icon class="more-icon" [nbContextMenu]="ellipseMenu"
+               [nbContextMenuTag]="stringify({id: row.id, index:rowIndex})"
+               nbContextMenuTrigger="click" icon="more-vertical">
+      </nb-icon>
+    </div>
+    <div *ngIf="renameIndex === rowIndex" [nbSpinner]="renaming">
+      <button class="success-light-button"  nbButton size="small" status="success" [disabled]="!nameInput.valid && nameInput.touched"
+              nbTooltip="Save" (click)="saveRename()">
+        <nb-icon icon="checkmark"></nb-icon>
+      </button>
+      <button class="remove-light-button" nbButton size="small" status="danger" nbTooltip="Cancel" (click)="cancelRename()">
+        <nb-icon icon="close"></nb-icon>
+      </button>
+    </div>
+  </ng-template>
+  <ng-template #nameHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('name')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('name')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field>
+        <input nbInput class="search-bar" [value]="selectedName" (input)="filter('name', $event)" type="search"
+               placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+    </div>
+  </ng-template>
+  <ng-template #countHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('projectCount')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('projectCount')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+    </div>
+  </ng-template>
+  <ng-template #engMappingHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('engagements')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('engagements')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field>
+        <input nbInput class="search-bar" [value]="selectedEngagements" (input)="filter('engagements', $event)" type="search"
+               placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+    </div>
+  </ng-template>
+</div>

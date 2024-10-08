@@ -1,0 +1,19 @@
+<ng-container *ngIf="node.level < 3">
+
+        <nb-icon [nbContextMenu]="ellipseMenu" (click)="startEvent(node)" nbContextMenuTag="{{node.item}}" icon="more-vertical">
+        </nb-icon> 
+     
+
+    <!-- <button class="mat-menu-options" mat-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon> 
+    </button>
+
+    <mat-menu  #menu="matMenu">
+
+        <button  mat-menu-item *ngFor="let item of getItemLevel(node); let i = index" (click)="triggerEvent(node, item)">
+            <mat-icon  >{{item.icon}}</mat-icon> {{item.title}}
+        </button>
+
+    </mat-menu> -->
+
+</ng-container>

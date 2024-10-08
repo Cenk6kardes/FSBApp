@@ -1,0 +1,33 @@
+<nb-card class="dialog" [nbSpinner]="loading" size="small">
+    <nb-card-header class="modal-title">Upload {{title}}</nb-card-header>
+    <nb-card-body>
+        <ngx-file-drop (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)"
+            [accept]="extensionsAllowed" [multiple]="false">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                <div class="d-flex flex-column">
+                    <span>Drag & Drop XLSX / XLS file or</span>
+                    <button type="button" nbButton (click)="openFileSelector()">Browse File</button>
+                </div>
+            </ng-template>
+        </ngx-file-drop>
+        <div class="pt-3">
+            <div *ngFor="let item of validFiles | async; index as i">
+                <div class="d-flex justify-content-between">
+                    <span>{{item.file}}</span>
+                    <span class="rounded-pill-file" *ngIf="item.valid; else fileNotValid">
+                        <nb-icon class="text-success" icon="checkmark-circle-2"></nb-icon>
+                        Successfully Read
+                    </span>
+                </div>
+                <ng-template #fileNotValid>
+                    <nb-icon class="text-danger" icon="close-circle"></nb-icon>
+                    Invalid File
+                </ng-template>
+            </div>
+        </div>
+    </nb-card-body>
+    <nb-card-footer class="modal-footer d-flex justify-content-end">
+        <button class="transparent-button" nbButton (click)="close()">Cancel</button>
+        <button class="primary-button" nbButton (click)="save()" status="primary" [disabled]="!allowUpload">Upload</button>
+    </nb-card-footer>
+</nb-card>

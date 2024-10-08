@@ -1,0 +1,115 @@
+<div>
+  <ngx-table [configuration]="configuration" [nbSpinner]="loadingUsers" [data]="data" [columns]="columns"
+    [pagination]="pagination" (change)="updateTable()">
+  </ngx-table>
+  <mat-paginator [length]="paginationTotalItems" [pageSize]="10" (page)="paginationEvent($event)"
+    [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons>
+  </mat-paginator>
+  <ng-template #userTpl let-row>
+    <nb-user class="nb-user-row" name="{{row.userName}}" color="#718096" title="{{row.email}}"></nb-user>
+  </ng-template>
+  <ng-template #roleTpl let-row>
+    <div class="ng-value" *ngIf="row.role">
+      <span class="map-text"> {{ row.role.name }} </span>
+    </div>
+  </ng-template>
+
+  <ng-template #entityMappingTpl let-row let-rowIndex="rowIndex" let-column="column">
+    <div *ngIf="row.listEntity" class="ng-value">
+      <!-- <span class="bg-default span-account"> {{row.listEntity.length}} </span> -->
+      <div class="entities-class">
+        <div *ngFor="let item of (row.minEntityList ? row.minEntityList : [])">
+          <div class="tag">
+            <nb-tag *ngIf="item.ein" appearance="outline" [text]="item.ein">
+            </nb-tag>
+            <span class="map-text entity-items"> {{ item.name }} </span>
+          </div>
+        </div>
+      </div>
+      <div class="entity-items" *ngIf="row.listEntity.length > 2">
+        <span *ngIf="!row.toggle" (click)="toggleEntities(true, row)" class="ng-value-label"> +
+          {{row.listEntity.length - 2}} more...</span>
+        <span *ngIf="row.toggle" (click)="toggleEntities(false, row)" class="ng-value-label"> Collapse</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #userHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('userName')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('userName')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field *nbIsGranted="['search', 'user']">
+        <input nbInput class="search-bar" [value]="selectedUser" (input)="filter('userName', $event)" type="search"
+          placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+    </div>
+  </ng-template>
+  <ng-template #roleHeaderActionTemplate let-row>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('role')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('role')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field *nbIsGranted="['search', 'user']">
+        <input nbInput class="search-bar" [value]="selectedRoleTitle" (input)="filter('role', $event)" type="search"
+          placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+    </div>
+  </ng-template>
+  <ng-template #entitiesHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('listEntity')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('listEntity')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field *nbIsGranted="['search', 'user']">
+        <input nbInput class="search-bar" [value]="selectedEntities" (input)="filter('listEntity', $event)"
+          type="search" placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+    </div>
+  </ng-template>
+
+
+  <ng-template #activeTpl let-row let-rowIndex="rowIndex" let-column="column">
+    <mat-slide-toggle [nbTooltip]="row.notifications ? 'Deactivate': 'Activate'" color="primary"
+      checked="{{row.notifications}}" (change)='toggleNotifications($event.checked, row.id)' [disabled]="!userAccess">
+      <p *ngIf="row.notifications" class="margin-b-0">Yes</p>
+      <p *ngIf="!row.notifications" class="margin-b-0">No</p>
+    </mat-slide-toggle>
+  </ng-template>
+
+
+  <ng-template #ellipsesTpl let-row let-rowIndex="rowIndex" let-column="column">
+    <div *ngIf="renameIndex !== rowIndex">
+      <nb-icon [nbContextMenu]="ellipseMenu" nbContextMenuTag="{{row.id}},{{rowIndex}}" nbContextMenuTrigger="click"
+        icon="more-vertical" *nbIsGranted="['update', 'user']">
+      </nb-icon>
+    </div>
+    <div *ngIf="renameIndex === rowIndex">
+      <button nbButton size="small" status="success" [disabled]="!nameInput.valid && nameInput.touched" nbTooltip="Save"
+        (click)="saveRename()">
+        <nb-icon icon="checkmark"></nb-icon>
+      </button>
+      <button nbButton size="small" status="danger" nbTooltip="Cancel" (click)="cancelRename()">
+        <nb-icon icon="close"></nb-icon>
+      </button>
+    </div>
+  </ng-template>
+</div>

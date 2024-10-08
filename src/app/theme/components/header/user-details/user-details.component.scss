@@ -1,0 +1,16 @@
+::ng-deep nb-popover {
+    .arrow {
+        display: none;
+    }
+}
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btnLogout {
+    width: 100%;
+}

@@ -1,0 +1,184 @@
+ <div class="" [nbSpinner]="loading">
+   <ngx-table [configuration]="configuration" [data]="tableData" #table id="projectTable" [columns]="columns"
+     [pagination]="pagination">
+     <ng-template let-row let-index="index">
+       <td (click)="eventEmitted(row.id)">
+         <div class="ng-star-inserted">{{ row.name }}</div>
+       </td>
+       <td (click)="eventEmitted(row.id)">
+         <div class="ng-star-inserted">{{ row.entitityEngagement }}</div>
+       </td>
+       <td (click)="eventEmitted(row.id)">
+         <div class="ng-star-inserted">{{ row.fy }}</div>
+       </td>
+       <td (click)="eventEmitted(row.id)">
+         <div class="ng-star-inserted">{{ row.startEndDate }}</div>
+       </td>
+       <td (click)="eventEmitted(row.id)">
+         <div class="ng-star-inserted status-positions"> <img
+             src="../../../../assets/images/{{ row.status | lowercase }}.svg" alt="" class="filter-icons" />
+           <div>{{ getStatusName(row.status) }}</div>
+         </div>
+       </td>
+       <td (click)="eventEmitted(row.id)">
+         <div class="ng-star-inserted">{{ row.lastProcessed }}</div>
+       </td>
+       <td (click)="eventEmitted(row.id)">
+         <div class="ng-star-inserted">
+           <div class="status-positions">
+             {{ row.dueTb }}<nb-icon class="alert-icon" nbPrefix icon="alert-triangle-outline"
+               *ngIf="row.overdue && row.status !== 'Completed'">
+             </nb-icon>
+           </div>
+           <div class="status-positions">
+             {{ row.dueFs }}
+             <!--<nb-icon class="alert-icon" nbPrefix icon="alert-triangle-outline">
+            </nb-icon>-->
+           </div>
+         </div>
+       </td>
+       <td>
+         <nb-icon icon="trash-outline" *nbIsGranted="['delete', 'project']" (click)="deleteProject(row)"></nb-icon>
+       </td>
+     </ng-template>
+   </ngx-table>
+   <ng-template #timestampTpl let-row>
+     <span class="light-row">{{ row.timestamp | date: "MMM d, HH:mm" }}</span>
+   </ng-template>
+   <ng-template #projectNameActionTemplate>
+     <div class="filter-template">
+       <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('name')">
+         <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+         Sort Ascending
+       </button>
+       <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('name')">
+         <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+         Sort Descending
+       </button>
+       <nb-form-field class="input-styling">
+         <input nbInput [value]="selectedProjectName" (input)="filter('name', $event, false)" type="search"
+           placeholder="Search" />
+         <nb-icon nbSuffix icon="search-outline"></nb-icon>
+       </nb-form-field>
+     </div>
+   </ng-template>
+   <ng-template #entityEngagementActionTemplate>
+     <div class="filter-template">
+       <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('entitityEngagement')">
+         <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+         Sort Ascending
+       </button>
+       <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('entitityEngagement')">
+         <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+         Sort Descending
+       </button>
+       <nb-form-field class="input-styling">
+         <input nbInput [value]="selectedProjectName" (input)="filter('entitityEngagement', $event, false)"
+           type="search" placeholder="Search" />
+         <nb-icon nbSuffix icon="search-outline"></nb-icon>
+       </nb-form-field>
+     </div>
+   </ng-template>
+   <ng-template #fyActionTemplate>
+     <div class="filter-template">
+       <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('fy')">
+         <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+         Sort Ascending
+       </button>
+       <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('fy')">
+         <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+         Sort Descending
+       </button>
+       <nb-form-field class="input-styling">
+         <input nbInput [value]="selectedProjectName" (input)="filter('fy', $event, false)" type="search"
+           placeholder="Search" />
+         <nb-icon nbSuffix icon="search-outline"></nb-icon>
+       </nb-form-field>
+     </div>
+   </ng-template>
+   <ng-template #startEndDateActionTemplate>
+     <div class="filter-template">
+       <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('startEndDate')">
+         <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+         Sort Ascending
+       </button>
+       <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('startEndDate')">
+         <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+         Sort Descending
+       </button>
+       <nb-form-field class="input-styling">
+         <input nbInput type="text" placeholder="Date Range" ngxDaterangepickerMd opens="top" drops="up"
+           [(ngModel)]="selectedStartEndDate" [showClearButton]="true" [dateLimit]="dateLimit"
+           (datesUpdated)="filter('startEndDate', $event, false)" />
+         <nb-icon nbSuffix icon="calendar-outline"></nb-icon>
+         <!-- <nb-form-field class="input-styling">
+           <input nbInput [value]="selectedProjectName" (input)="filter('startEndDate', $event, false)" type="search"
+             placeholder="Search" />
+           <nb-icon nbSuffix icon="search-outline"></nb-icon> -->
+       </nb-form-field>
+     </div>
+   </ng-template>
+   <ng-template #statusActionTemplate>
+     <div class="filter-template">
+       <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('status')">
+         <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+         Sort Ascending
+       </button>
+       <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('status')">
+         <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+         Sort Descending
+       </button>
+       <nb-form-field class="input-styling">
+         <input nbInput [value]="selectedStatus" (input)="filter('status', $event, false)" type="search"
+           placeholder="Search" />
+         <nb-icon nbSuffix icon="search-outline"></nb-icon>
+       </nb-form-field>
+       <div class="checkbox-filters" *ngFor="let project of statusFilters">
+         <nb-checkbox [checked]="selectedStatusSet.has(project)"
+           (change)="filter('status', project.split(' ').join(''), true)">{{ project }}
+         </nb-checkbox>
+       </div>
+     </div>
+   </ng-template>
+   <ng-template #lastProcessedActionTemplate>
+     <div class="filter-template">
+       <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('lastProcessed')">
+         <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+         Sort Ascending
+       </button>
+       <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('lastProcessed')">
+         <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+         Sort Descending
+       </button>
+       <nb-form-field class="input-styling">
+         <input nbInput [value]="selectedLastProcessed" (input)="filter('lastProcessed', $event, false)" type="search"
+           placeholder="Search" />
+         <nb-icon nbSuffix icon="search-outline"></nb-icon>
+       </nb-form-field>
+     </div>
+   </ng-template>
+   <ng-template #dueTbFsActionTemplate>
+     <div class="filter-template">
+       <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('dueTbFs')">
+         <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+         Sort Ascending
+       </button>
+       <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('dueTbFs')">
+         <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+         Sort Descending
+       </button>
+       <nb-form-field class="input-styling">
+         <input nbInput type="text" placeholder="Date Range" ngxDaterangepickerMd opens="left" drops="up"
+           [(ngModel)]="selectedDueTbFs" [showClearButton]="true" [dateLimit]="dateLimit"
+           (datesUpdated)="filter('dueTbFs', $event, false)" />
+         <nb-icon nbSuffix icon="calendar-outline"></nb-icon>
+         <!-- <input nbInput [value]="selectedDueTbFs" (input)="filter('dueTbFs', $event, false)" type="search"
+           placeholder="Search" />
+         <nb-icon nbSuffix icon="search-outline"></nb-icon> -->
+       </nb-form-field>
+     </div>
+   </ng-template>
+   <mat-paginator [length]="paginationTotalItems" [pageSize]="10" (page)="paginationEvent($event)"
+     [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons>
+   </mat-paginator>
+ </div>

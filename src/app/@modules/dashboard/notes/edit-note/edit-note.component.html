@@ -1,0 +1,63 @@
+<nb-card class="dialog" [nbSpinner]="loading">
+  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-body>
+    <div class="col-12">
+      <form [formGroup]="form">
+        <div class="form-group margin-bottom-20">
+          <label for="" class="label">Title*:</label>
+          <input type="hidden" formControlName="id">
+          <input type="hidden" formControlName="createdDate">
+          <input type="hidden" formControlName="isGlobal">
+          <input nbInput fullWidth [readonly]="modalType === 3 ? true : false" type="text" formControlName="title"
+            size="medium" placeholder="Title" [status]="
+              form.get('title')!.touched && !form.get('title')!.valid
+                ? 'danger'
+                : 'primary'
+            " />
+          <span class="text-danger" *ngIf="!form.get('title')!.valid && form.get('title')!.touched">
+            *Title is required
+          </span>
+          <span class="float-right" [ngClass]="titleText.value.length > 100 ? 'text-danger' : ''">
+            {{titleText.value.length || 0}} of 100 characters
+          </span>
+        </div>
+        <div class="form-group margin-bottom-20">
+          <label for="" class="label">Text of The Note*:</label>
+          <textarea nbInput fullWidth [readonly]="modalType === 3 ? true : false" type="text"
+            formControlName="description" size="medium" placeholder="Description" [status]="
+              form.get('description')!.touched &&
+              !form.get('description')!.valid
+                ? 'danger'
+                : 'primary'
+            " rows="6"></textarea>
+          <span class="text-danger" *ngIf="
+              !form.get('description')!.valid &&
+              form.get('description')!.touched && !form.get('description')!.errors!['maxlength']
+            ">
+            *Description is required
+          </span>
+          <span class="float-right" [ngClass]="description.value.length > 250 ? 'text-danger' : ''">
+            {{description.value.length || 0}} of 250 characters
+          </span>
+        </div>
+        <div class="form-group" *nbIsGranted="['create', 'globalNote']">
+          <nb-checkbox formControlName="isGlobal">Global Note</nb-checkbox>
+        </div>
+        <div class="form-group" *ngIf="modalType === 3">
+          <span class="text-danger">
+            Are you sure you want to delete this Note?
+          </span>
+        </div>
+      </form>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="d-flex justify-content-end">
+    <button nbButton (click)="close()">Cancel</button>
+    <button *ngIf="modalType !== 3" nbButton (click)="onSave(modalType)" status="primary" [disabled]="!form.valid">
+      {{modalType === 1 ? 'Add Note':'Save Note'}}
+    </button>
+    <button *ngIf="modalType === 3" nbButton (click)="onSave(modalType)" status="primary" [disabled]="!form.valid">
+      Delete Note
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,105 @@
+<div class="">
+  <ngx-table id="excel-table" [configuration]="configuration" [data]="data" #table [columns]="columns"
+             [pagination]="pagination">
+  </ngx-table>
+  <mat-paginator
+    [length]="paginationTotalItems"
+    [pageSize]="10"
+    (page)="paginationEvent($event)"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+  <ng-template #userTpl let-row>
+    <nb-user class="nb-user-row" name="{{row.username}}" color="#718096"></nb-user>
+  </ng-template>
+  <ng-template #timestampTpl let-row>
+    <span class="light-row">{{ row.createdDate | date: 'MMM d, yyyy HH:mm' }}</span>
+  </ng-template>
+  <ng-template #userHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('username')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('username')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field
+        class="input-styling">
+        <input nbInput
+               [value]="selectedUser"
+               (input)="filter('username', $event, false)"
+               type="search"
+               placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+      <div class="checkbox-filters" *ngFor="let name of userNameFilters">
+        <nb-checkbox [checked]="selectedUserSet.has(name)"
+                     (change)="filter('username', name, true)">{{name}}
+        </nb-checkbox>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #activityTitleHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('activityTitle')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('activityTitle')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field class="input-styling">
+        <input nbInput
+               [value]="selectedActivityTitle"
+               (input)="filter('activityTitle', $event)"
+               type="search"
+               placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+    </div>
+  </ng-template>
+  <ng-template #activityDescHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('activityDescription')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('activityDescription')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field
+        class="input-styling">
+        <input nbInput
+               [value]="selectedActivityDesc"
+               (input)="filter('activityDescription', $event)"
+               type="search"
+               placeholder="Search">
+        <nb-icon nbSuffix icon="search-outline"></nb-icon>
+      </nb-form-field>
+    </div>
+  </ng-template>
+  <ng-template #timestampHeaderActionTemplate>
+    <div class="filter-template">
+      <button mat-flat-button [disableRipple]="true" (click)="sortByAsc('createdDate')">
+        <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+        Sort Ascending
+      </button>
+      <button mat-flat-button [disableRipple]="true" (click)="sortByDesc('createdDate')">
+        <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+        Sort Descending
+      </button>
+      <nb-form-field
+        class="input-styling">
+        <input nbInput type="text" placeholder="Date Range" ngxDaterangepickerMd [opens]="position"
+               [(ngModel)]="selectedDate" [showClearButton]="true" [dateLimit]="dateLimit" (datesUpdated)="filter('createdDate', $event)"/>
+        <nb-icon nbSuffix icon="calendar-outline"></nb-icon>
+      </nb-form-field>
+      <span id="info">*Date range can be max 2 years!</span>
+    </div>
+  </ng-template>
+</div>

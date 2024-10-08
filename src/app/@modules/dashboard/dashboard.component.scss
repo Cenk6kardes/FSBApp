@@ -1,0 +1,99 @@
+::ng-deep nb-card {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E0 !important;
+    border-radius: 6px;
+}
+
+.export-btn {
+    background-color: #FFFFFF !important;
+    border-radius: 4px !important;
+    color: #2D3748 !important;
+    text-transform: none !important;
+    border-color: #A0AEC0 !important;
+    margin-right: 16px;
+}
+
+.add-new-btn {
+    background-color: #427DBF !important;
+    border-radius: 4px !important;
+    color: #FFFFFF !important;
+    text-transform: none !important;
+    border-color: #427DBF !important;
+}
+.text-right {
+    text-align: right;
+}
+
+//will delete
+.action-row {
+    display: flex;
+    flex-direction: row;
+  }
+
+.filter-criteria {
+    text-transform: capitalize !important;
+    background-color: #718096 !important;
+    border-color: #718096 !important;
+    font-weight: normal !important;
+    height: 20px !important;
+    margin-right: 6px !important;
+}
+
+.filtered-by {
+    display: inline-block;
+    padding-left: 35px;
+  
+    span {
+      font-size: 12px;
+      color: #718096;
+      padding-left: 6px;
+      padding-right: 16px;
+    }
+}
+
+.filtered-by-icon {
+    background: url("../../../assets/images/icon-filtered-by.svg") no-repeat;
+    height: 9px;
+    width: 16px;
+}
+
+.clear-filter {
+    display: inline-block;
+    padding-left: 16px;
+  
+    .mat-flat-button {
+      color: #427DBF;
+      font-size: 12px;
+      background-color: transparent;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+}
+
+.clear-filter-icon {
+    // background: url("../../../assets/images/icon-clear-filter.svg") no-repeat;
+    width: 14px;
+    height: 14px;
+}
+
+.card-header--text {
+    font-size: 23px;
+    line-height: 34px;
+    color: #2D3748;
+    font-weight: 800;
+}
+
+.row-layout-start {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: start;
+}
+.row-layout-start-center{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}

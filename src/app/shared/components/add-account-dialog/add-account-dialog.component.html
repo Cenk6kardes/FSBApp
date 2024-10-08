@@ -1,0 +1,142 @@
+<nb-card class="dialog">
+  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-body>
+    <div class="col-12">
+      <form (submit)="addAccount()" [formGroup]="accountForm">
+        <div formArrayName="accounts" *ngFor="let account of accounts.controls; let i = index">
+          <div [formGroupName]="i">
+            <div class="form-group account-container">
+              <div class="account-divs">
+                <div>
+                  <label>Account Number:</label>
+                </div>
+                <div>
+                  <input nbInput type="text" size="small" placeholder="Number" maxlength="20" readonly
+                    formControlName="accountName" />
+                </div>
+                <div class="alert-danger" *ngIf="
+                    accounts.controls[i].get('accountName')!.invalid &&
+                    (accounts.controls[i].get('accountName')!.dirty ||
+                      accounts.controls[i].get('accountName')!.touched)
+                  ">
+                  <div class="container-error-message"
+                    *ngIf="accounts.controls[i].get('accountName')!.errors?.['pattern']">
+                    Only numbers.
+                  </div>
+                </div>
+              </div>
+              <div class="account-divs">
+                <div>
+                  <label>Account Description:</label>
+                </div>
+                <div>
+                  <input nbInput type="text" size="small" placeholder="Description" readonly
+                    formControlName="accountDescription" />
+                </div>
+                <div class="alert-danger" *ngIf="
+                    accounts.controls[i].get('accountDescription')!.invalid &&
+                    (accounts.controls[i].get('accountDescription')!.dirty ||
+                      accounts.controls[i].get('accountDescription')!.touched)
+                  ">
+                  <div class="container-error-message"
+                    *ngIf="accounts.controls[i].get('accountDescription')!.errors?.['required']">
+                    Description is required.
+                  </div>
+                  <div class="container-error-message"
+                    *ngIf="accounts.controls[i].get('accountDescription')!.errors?.['whitespace']">
+                    Please enter valid data.
+                  </div>
+                </div>
+              </div>
+              <div class="account-divs">
+                <div>
+                  <label></label>
+                </div>
+                <div>
+                  <button nbButton status="basic" type="button" (click)="editAccount(i)">
+                    <nb-icon icon="edit-outline" nbTooltip="Edit"></nb-icon>
+                  </button>
+                  <button nbButton status="basic" type="button" (click)="removeAccount(i)">
+                    <nb-icon icon="trash-outline" nbTooltip="Delete"></nb-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="new-account" (click)="addNewAccount()" *ngIf="!showNewForm && accounts.controls.length >0">
+            <nb-icon icon="plus-outline" nbTooltip="Add"></nb-icon>Add Another Account
+          </label>
+        </div>
+
+        <div class="middle-container" *ngIf="accounts.controls.length > 0 && showNewForm">
+          <div class="line-center">
+            <div class="text-middle-line">
+              <p>Add more</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group account-container" *ngIf="showNewForm || accounts.controls.length < 1">
+          <div class="account-divs">
+            <div>
+              <label>Account Number:</label>
+            </div>
+            <div>
+              <input nbInput type="text" size="small" formControlName="name" maxlength="20" placeholder="Number" />
+            </div>
+            <div class="alert-danger" *ngIf="name!.invalid && (name!.dirty || name!.touched)">
+              <div class="container-error-message" *ngIf="name!.errors?.['pattern']">
+                Only numbers.
+              </div>
+            </div>
+          </div>
+          <div class="account-divs">
+            <div>
+              <label>Account Description:</label>
+            </div>
+            <div>
+              <input nbInput type="text" size="small" formControlName="description" placeholder="Description" />
+            </div>
+            <div class="alert-danger" *ngIf="
+                description!.invalid &&
+                (description!.dirty || description!.touched)
+              ">
+              <div class="container-error-message" *ngIf="description!.errors?.['required']">
+                Description is required.
+              </div>
+              <div *ngIf="description!.errors?.['whitespace']">
+                Please enter valid data.
+              </div>
+            </div>
+          </div>
+          <div class="account-divs">
+            <div>
+              <label></label>
+            </div>
+            <div>
+              <button nbButton type="submit" status="basic" [disabled]="accountForm.invalid">
+                <nb-icon icon="plus-outline" nbTooltip="Add"></nb-icon>
+              </button>
+              <button nbButton type="button" (click)="deleteNewAcc()" status="basic">
+                <nb-icon icon="trash-outline" nbTooltip="Delete"></nb-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="account-divs" *ngIf="description?.valid && name?.valid">
+          <nb-alert accent="warning">Warning. Be sure to add the new record before saving!</nb-alert>
+        </div>
+      </form>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <div class="d-flex justify-content-end">
+      <button nbButton type="button" (click)="close()">Cancel</button>
+      <button nbButton type="button" [disabled]="isDisabled()" (click)="save()" status="primary">
+        Save
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

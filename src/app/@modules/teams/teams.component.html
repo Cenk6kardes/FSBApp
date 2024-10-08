@@ -1,0 +1,15 @@
+<div class="col-12" [nbSpinner]="loagingChanges">
+    <div class="row">
+        <div class="content-button" *nbIsGranted="['create', 'user']">
+            <button class="primary-button" nbButton size="small" status="primary" (click)="openDialog()"><nb-icon icon="plus-outline"></nb-icon>Add New User</button>
+        </div>
+    </div>
+    <br>
+    <div class="activity-table">
+        <nb-card>
+          <app-view-user-teams></app-view-user-teams>
+        </nb-card>
+      </div>
+</div>
+
+

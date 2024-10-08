@@ -1,0 +1,19 @@
+<div [nbSpinner]="loading">
+  <h2>{{projectName}}</h2>
+  <br>
+  <app-status-bar></app-status-bar>
+  <nb-tabset>
+    <nb-tab tabTitle="Project Dashboard">
+      <app-project-dashboard></app-project-dashboard>
+    </nb-tab>
+    <nb-tab tabTitle="FS Structuring">
+      <app-fs-structuring></app-fs-structuring>
+    </nb-tab>
+    <nb-tab tabTitle="Balance Processing">
+      <app-project-balance-processing></app-project-balance-processing>
+    </nb-tab>
+    <nb-tab tabTitle="Project Settings">
+      <app-project-settings></app-project-settings>
+    </nb-tab>
+  </nb-tabset>
+</div>

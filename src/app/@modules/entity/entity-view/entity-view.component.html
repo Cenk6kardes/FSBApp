@@ -1,0 +1,188 @@
+<div class="row-table-wrapper" [nbSpinner]="loading">
+  <nb-card size="giant">
+    <div class="full-width column-layout-start">
+      <div class="full-width row-layout-start" style="height: 136px;">
+        <div class="row-table-half">
+          <nb-card class="row-table" size="large">
+            <nb-card-header>
+              <h2>Engagement
+                <button class="menu-button" mat-flat-button [disableRipple]="true" [matMenuTriggerFor]="engagementMenu">
+                  <span class="material-icons funnel-material-icon md-18">filter_alt</span>
+                </button>
+              </h2>
+              <mat-menu class="mat-elevation-z1" #engagementMenu="matMenu">
+                <button mat-flat-button [disableRipple]="true" (click)="sortByAsc(1)">
+                  <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+                  Sort Ascending
+                </button>
+                <button mat-flat-button [disableRipple]="true" (click)="sortByDesc(1)">
+                  <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+                  Sort Descending
+                </button>
+              </mat-menu>
+              <div class="filter-row">
+                <nb-form-field class="input-styling">
+                  <input nbInput [value]="engagementInput" [disabled]="!isGranted"
+                    (input)="filter('engagementName', $event)" type='search' placeholder="Search" />
+                  <span nbSuffix class="material-icons-outlined md-18">search</span>
+                </nb-form-field>
+                <button class="primary-button" [disabled]="!isGranted" nbButton status="primary" size="medium"
+                  (click)="openDialog(operationType.Add, false)">
+                  <span nbSuffix class="material-icons-outlined md-18">add</span>
+                  Add {{engagementTitle}}
+                </button>
+              </div>
+            </nb-card-header>
+          </nb-card>
+        </div>
+        <div class="row-table-divider" style="height: 619px;"></div>
+        <div class="row-table-half">
+          <nb-card class="row-table" size="large">
+            <nb-card-header>
+              <h2>Entity
+                <button class="menu-button" mat-flat-button [disableRipple]="true" [matMenuTriggerFor]="entityMenu">
+                  <span class="material-icons funnel-material-icon md-18">filter_alt</span>
+                </button>
+              </h2>
+              <mat-menu class="mat-elevation-z1" #entityMenu="matMenu">
+                <button mat-flat-button [disableRipple]="true" (click)="sortByAsc(2)">
+                  <nb-icon nbPrefix icon="arrow-upward"></nb-icon>
+                  Sort Ascending
+                </button>
+                <button mat-flat-button [disableRipple]="true" (click)="sortByDesc(2)">
+                  <nb-icon nbPrefix icon="arrow-downward"></nb-icon>
+                  Sort Descending
+                </button>
+              </mat-menu>
+              <div class="filter-row">
+                <nb-form-field class="input-styling">
+                  <input nbInput [value]="entityInput" [disabled]="!isGranted" (input)="filter('entityName', $event)"
+                    type='search' placeholder="Search" />
+                  <span nbSuffix class="material-icons-outlined md-18">search</span>
+                </nb-form-field>
+                <button class="primary-button" [disabled]="!isGranted" nbButton status="primary" size="medium"
+                  (click)="openDialog(operationType.Add, true)">
+                  <span nbSuffix class="material-icons-outlined md-18">add</span>
+                  Add {{entityTitle}}
+                </button>
+              </div>
+            </nb-card-header>
+          </nb-card>
+        </div>
+      </div>
+      <nb-card-body class="entity-list-card">
+        <div *ngIf="!loading && _engagementMap.length <= 0">No items found</div>
+        <div *ngIf="loading">Loading...</div>
+        <mat-selection-list #entityList *ngIf="_engagementMap.length > 0" [multiple]="false" class="entity-mat-list">
+          <div [ngStyle]="{'height': getHeight(item)}" class="list-option-container"
+            *ngFor="let item of _engagementMap">
+            <div class="list-option">
+              <mat-list-option class="standard-600-row light-row" *ngIf="!item.isOstensible && !item.active"
+                [value]="item.id">
+                {{item.name}}
+              </mat-list-option>
+              <mat-list-option class="standard-600-row" *ngIf="item.isOstensible || item.active" [value]="item.id">
+                {{item.name}}
+              </mat-list-option>
+              <div [ngClass]="!isGranted ? 'notAllowedWrapper': ''">
+                <nb-actions size="tiny" style="margin-top:15px" [hidden]="item.isOstensible"
+                  [ngClass]="!isGranted ? 'notAllowedActions': ''">
+                  <nb-action [nbTooltip]="item.active === false ? 'Activate' : 'Deactivate'">
+                    <mat-slide-toggle color="primary" [checked]="item.active"
+                      (change)="toggleStatus($event.checked, item)">
+                    </mat-slide-toggle>
+                  </nb-action>
+                  <nb-action nbTooltip="Edit" [disabled]="!item.active"
+                    (click)="item.active && openDialog(operationType.Update, false, item)">
+                    <button class="faded-primary-button" [disabled]="!item.active" nbButton outline size="small"
+                      status="success">
+                      <span class="material-icons-outlined md-14">edit</span>
+                    </button>
+                  </nb-action>
+                  <nb-action nbTooltip="Delete" [disabled]="!item.active || !engCoaList"
+                    (click)="item.active && engCoaList && openDialog(operationType.Delete, false, item)">
+                    <button class="faded-primary-button" [disabled]="!item.active || !engCoaList" nbButton outline
+                      size="small" status="success">
+                      <span class="material-icons-outlined md-14">delete</span>
+                    </button>
+                  </nb-action>
+                </nb-actions>
+              </div>
+            </div>
+
+            <div class="list-option-entities-container">
+              <div class="list-option-entities" *ngFor="let entity of getEntities(item)">
+                <mat-list-option class="light-row"
+                  *ngIf="((!entity.active || !item.active) && !item.isOstensible) || (!entity.active && item.isOstensible)"
+                  [value]="entity.id">
+                  <div class="entity-row">
+                    <div class="tag">
+                      <nb-tag *ngIf="entity.ein" class="light-tag" appearance="outline" [text]="entity.ein"></nb-tag>
+                    </div>
+                    <div class="name">
+                      {{entity.name}}
+                    </div>
+                  </div>
+                </mat-list-option>
+                <mat-list-option
+                  *ngIf="(entity.active && item.active && !item.isOstensible) || (entity.active && item.isOstensible)"
+                  [value]="entity.id">
+                  <div class="entity-row">
+                    <div class="tag">
+                      <nb-tag *ngIf="entity.ein" appearance="outline" [text]="entity.ein"></nb-tag>
+                    </div>
+                    <div class="name">
+                      {{entity.name}}
+                    </div>
+                  </div>
+                </mat-list-option>
+                <div [ngClass]="!isGranted ? 'notAllowedWrapper': ''">
+                  <nb-actions size="tiny" style="margin-top:15px" [ngClass]="!isGranted ? 'notAllowedActions': ''">
+                    <nb-action [nbTooltip]="entity.active === false ? 'Activate' : 'Deactivate'">
+                      <mat-slide-toggle *ngIf="!item.isOstensible" color="primary"
+                        [checked]="entity.active && item.active" [disabled]="!item.active && !item.isOstensible"
+                        (change)="toggleStatus($event.checked, item, entity.id)">
+                      </mat-slide-toggle>
+                      <mat-slide-toggle *ngIf="item.isOstensible" color="primary" [checked]="entity.active"
+                        (change)="toggleStatus($event.checked, item, entity.id)">
+                      </mat-slide-toggle>
+                    </nb-action>
+                    <nb-action *ngIf="!item.isOstensible" nbTooltip="Edit" [disabled]="!item.active || !entity.active"
+                      (click)="entity.active && item.active && openDialog(operationType.Update, true, entity)">
+                      <button class="faded-primary-button" [disabled]="!item.active || !entity.active" nbButton outline
+                        size="small" status="success">
+                        <span class="material-icons-outlined md-14">edit</span>
+                      </button>
+                    </nb-action>
+                    <nb-action *ngIf="item.isOstensible" nbTooltip="Edit" [disabled]="!entity.active"
+                      (click)="entity.active && openDialog(operationType.Update, true, entity)">
+                      <button class="faded-primary-button" [disabled]="!entity.active" nbButton outline size="small"
+                        status="success">
+                        <nb-icon icon="edit-outline" status="primary"></nb-icon>
+                      </button>
+                    </nb-action>
+                    <nb-action *ngIf="!item.isOstensible" nbTooltip="Delete"
+                      [disabled]="!item.active || !entity.active || !engCoaList"
+                      (click)="entity.active && engCoaList && item.active && openDialog(operationType.Delete, true, entity)">
+                      <button class="faded-primary-button" [disabled]="!item.active || !entity.active || !engCoaList"
+                        nbButton outline size="small" status="success">
+                        <span class="material-icons-outlined md-14">delete</span>
+                      </button>
+                    </nb-action>
+                    <nb-action *ngIf="item.isOstensible" nbTooltip="Delete" [disabled]="!entity.active"
+                      (click)="entity.active && openDialog(operationType.Delete, true, entity)">
+                      <button class="faded-primary-button" [disabled]="!entity.active" nbButton outline size="small"
+                        status="success">
+                        <nb-icon icon="trash-outline" status="primary"></nb-icon>
+                      </button>
+                    </nb-action>
+                  </nb-actions>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-selection-list>
+      </nb-card-body>
+    </div>
+  </nb-card>
+</div>

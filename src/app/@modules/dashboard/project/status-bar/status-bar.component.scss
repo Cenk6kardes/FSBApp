@@ -1,0 +1,96 @@
+.statusTitle {
+    font-weight: 600;
+}
+
+.statusBars {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.status {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 1rem;
+}
+
+.statusClickable {
+    cursor: pointer;
+}
+
+.statusNewOngoing ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-image: linear-gradient(90deg, #6DD7FE, rgba(217, 217, 217, 0) 80%);
+        }
+    }
+}
+
+.statusConfigureFSOngoing ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-image: linear-gradient(90deg, #5B9AD3, rgba(217, 217, 217, 0) 80%);
+        }
+    }
+}
+
+.statusTBUploadOngoing ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-image: linear-gradient(90deg, #9476B7, rgba(217, 217, 217, 0) 80%);
+        }
+    }
+}
+
+.statusFSReviewOngoing ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-image: linear-gradient(90deg, #F4B258, rgba(217, 217, 217, 0) 80%);
+        }
+    }
+}
+
+.statusNewDone ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-color: #6DD7FE;
+        }
+    }
+}
+
+.statusConfigureFSDone ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-color: #5B9AD3;
+        }
+    }
+}
+
+.statusTBUploadDone ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-color: #9476B7;
+        }
+    }
+}
+
+.statusFSReviewDone ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-color: #F4B258;
+        }
+    }
+}
+
+.statusCompletedDone ::ng-deep{
+    .progress-container {
+        .progress-value {
+            background-color: #00C2A4;
+        }
+    }
+}
+
+.statusLabelLayout {
+    display: flex;
+    gap: 0.4rem;
+}

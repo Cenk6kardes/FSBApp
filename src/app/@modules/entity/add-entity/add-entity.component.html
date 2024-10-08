@@ -1,0 +1,87 @@
+<nb-card class="dialog" [size]="type === entityType.Engagement ? '' : ''" [nbSpinner]="loading">
+  <nb-card-header class="modal-title">
+    {{title}}
+  </nb-card-header>
+  <nb-card-body>
+    <div class="col-12">
+      <form [formGroup]="form">
+        <div formGroupName="engagementForm">
+          <div class="form-group">
+            <label for="" class="label">Name*</label>
+            <input nbInput fullWidth type="text" formControlName="name" size="small"
+              [status]="form.get('engagementForm.name')!.touched && !form.get('engagementForm.name')!.valid ? 'danger' : 'primary'"
+              placeholder="{{title.split(' ')[1]}} name" />
+            <span class="text-danger"
+              *ngIf="form.get('engagementForm.name')!.errors?.['required'] && form.get('engagementForm.name')!.touched">
+              *Name is required
+            </span>
+            <span class="text-danger" *ngIf="form.get('engagementForm.name')!.touched
+                            && form.get('engagementForm.name')!.errors?.['pattern']">
+              *Special characters are not allowed
+            </span>
+            <span class="text-danger" *ngIf="isDuplicate">
+              *Change name of Engagement
+            </span>
+          </div>
+          <div class="form-group pt-3" *ngIf="type === entityType.Engagement">
+            <label for="lblType" class="label">{{searchPlHolder}}</label>
+            <ng-select [items]="options" formControlName="entities" bindLabel="name" bindValue="id" labelForId="lblType"
+              [multiple]="true" placeholder="Search {{searchPlHolder}}..." [appendTo]="'body'">
+            </ng-select>
+          </div>
+        </div>
+        <div class="hrdivider" *ngIf="type === entityType.Entity">
+          <hr />
+          <span class="text-hint">Non-mandatory fields</span>
+        </div>
+        <div class="row pt-3" formGroupName="entityForm" *ngIf="type === entityType.Entity">
+          <div class="col-6">
+            <div class="form-group">
+              <label for="lblType" class="label">{{searchPlHolder}}</label>
+              <ng-select [items]="options" formControlName="engagementId" bindLabel="name" bindValue="id"
+                labelForId="lblType" [multiple]="false" placeholder="Search {{searchPlHolder}}..." [appendTo]="'body'">
+              </ng-select>
+            </div>
+            <div class="form-group pt-3">
+              <label for="" class="label">EntityType</label>
+              <ng-select [items]="entityTypes$ | async" formControlName="entityTypeId" bindLabel="name" bindValue="id"
+                [multiple]="false" placeholder="Search entityTypes..." [appendTo]="'body'">
+              </ng-select>
+            </div>
+            <div class="form-group pt-3">
+              <label for="" class="label">Industry</label>
+              <ng-select [items]="industries$ | async" formControlName="industryId" bindLabel="name" bindValue="id"
+                [multiple]="false" placeholder="Search industries..." [appendTo]="'body'">
+              </ng-select>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              <label for="" class="label">EIN</label>
+              <input nbInput formControlName="ein" size="small" status="primary" fullWidth />
+            </div>
+            <div class="form-group pt-3">
+              <label for="" class="label">Country of Origin</label>
+              <ng-select [items]="countries$ | async" formControlName="countryId" bindLabel="name" bindValue="id"
+                [multiple]="false" placeholder="Search countries..." [appendTo]="'body'">
+              </ng-select>
+            </div>
+            <div class="form-group pt-3">
+              <label for="" class="label">Currency</label>
+              <ng-select [items]="currencies$ | async" placeholder="Search currencies..." formControlName="currencyId"
+                bindLabel="name" bindValue="id" [multiple]="false" [appendTo]="'body'">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="modal-footer d-flex justify-content-end">
+    <button class="transparent-button" nbButton (click)="close()">Cancel</button>
+    <button class="primary-button" nbButton (click)="onSave()" status="primary"
+      [disabled]="(!form.get('engagementForm')?.valid || !form.get('entityForm')?.valid) || isDuplicate">
+      Save
+    </button>
+  </nb-card-footer>
+</nb-card>

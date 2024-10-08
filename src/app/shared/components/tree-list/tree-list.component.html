@@ -1,0 +1,214 @@
+<div class="container-tree-actions">
+
+  <div class="actions-tree-top" *ngIf="tabType == 1 || tabType == 3">
+    <button class="tree-primary-button" nbButton outline size="tiny" status="primary" (click)="addHeader()">
+      <nb-icon icon="plus"></nb-icon>
+    </button>
+    Add Header
+  </div>
+  <div class="actions-tree-top" *ngIf="tabType == 2 || tabType == 4">
+    <button class="tree-secondary-button" nbButton outline size="tiny" status="primary" (click)="addHeader()">
+      <nb-icon icon="plus"></nb-icon>
+    </button>
+    Add Header
+  </div>
+  <div class="actions-tree-top" *ngIf="tabType == 1 || tabType == 3">
+    <button class="tree-primary-button" nbButton outline size="tiny" status="primary" (click)="expandTree()">
+      <nb-icon icon="expand-outline"></nb-icon>
+    </button>
+    Expand
+  </div>
+  <div class="actions-tree-top" *ngIf="tabType == 2 || tabType == 4">
+    <button class="tree-secondary-button" nbButton outline size="tiny" status="primary" (click)="expandTree()">
+      <nb-icon icon="expand-outline"></nb-icon>
+    </button>
+    Expand
+  </div>
+
+  <div class="actions-tree-top" *ngIf="tabType == 1 || tabType == 3">
+    <button class="tree-primary-button" nbButton outline size="tiny" status="primary" (click)="collapseTree()">
+      <nb-icon icon="collapse-outline"></nb-icon>
+    </button>
+    Collapse
+  </div>
+  <div class="actions-tree-top" *ngIf="tabType == 2 || tabType == 4">
+    <button class="tree-secondary-button" nbButton outline size="tiny" status="primary" (click)="collapseTree()">
+      <nb-icon icon="collapse-outline"></nb-icon>
+    </button>
+    Collapse
+  </div>
+
+  <div class="actions-tree-top" *ngIf="treeType == 'Project' && (tabType == 1 || tabType == 3)">
+    <button class="tree-primary-button" nbButton outline size="tiny" status="primary" (click)="downloadTree()">
+      <nb-icon icon="download-outline"></nb-icon>
+    </button>
+    Download
+  </div>
+  <div class="actions-tree-top" *ngIf="treeType == 'Project' && (tabType == 2 || tabType == 4)">
+    <button class="tree-secondary-button" nbButton outline size="tiny" status="primary" (click)="downloadTree()">
+      <nb-icon icon="download-outline"></nb-icon>
+    </button>
+    Download
+  </div>
+
+  <div class="actions-tree-top" *ngIf="treeType == 'Project' && (tabType == 1 || tabType == 3) && isEditable">
+    <button class="tree-primary-button" nbButton outline size="tiny" status="primary" (click)="uploadTree()">
+      <nb-icon icon="upload-outline"></nb-icon>
+    </button>
+    Upload
+  </div>
+  <div class="actions-tree-top" *ngIf="treeType == 'Project' && (tabType == 2 || tabType == 4) && isEditable">
+    <button class="tree-secondary-button" nbButton outline size="tiny" status="primary" (click)="uploadTree()">
+      <nb-icon icon="upload-outline"></nb-icon>
+    </button>
+    Upload
+  </div>
+</div>
+
+<div *ngIf="addingHeader">
+  <button mat-icon-button disabled></button>
+
+  <mat-form-field appearance="fill" class="add-header">
+    <mat-label>New Header:</mat-label>
+    <input matInput #headerValue placeholder="New Header..." (keydown)="headerOnKeydown($event)">
+  </mat-form-field>
+  <nb-icon icon="trash-outline" *ngIf="headerValue.value === ''" (click)="deleteDefaultHeader()"></nb-icon>
+</div>
+
+<mat-tree class="mat-tree-container" [dataSource]="dataSource" [treeControl]="treeControl" [nbSpinner]="downloading"
+  [nbSpinner]="uploading">
+
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
+    [ngClass]="styleType == 'income' ? 'node-lines': 'node-lines-balance'">
+    <div *ngIf="node.level > 1" [ngClass]="styleType == 'income' ? 'child-node-lines': 'child-node-lines-balance'">
+    </div>
+    <div *ngIf="node.level > 2"
+      [ngClass]="styleType == 'income' ? 'child-node-lines-last': 'child-node-lines-last-balance'">
+    </div>
+    <button mat-icon-button disabled *ngIf="node.level < 3">
+      <mat-icon class="mat-icon-rtl-mirror circle">
+        radio_button_unchecked
+      </mat-icon>
+    </button>
+    <button mat-icon-button disabled *ngIf="node.level > 2">
+      <mat-icon class="mat-icon-rtl-mirror circle">
+        change_history
+      </mat-icon>
+    </button>
+
+    <app-tree-drag-and-drop [node]="node" [styleType]="styleType" [flatNodeMap]="flatNodeMap"
+      (DragStartEmitter)="handleDragStart($event)" (DragOverEmitter)="handleDragOver($event)"
+      (DropEmitter)="handleDrop($event)" (DragEndEmitter)="handleDragEnd($event)" (EditTotalEmitter)="AddTotal($event)">
+    </app-tree-drag-and-drop>
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+    <button mat-icon-button disabled></button>
+
+    <mat-form-field appearance="fill">
+      <mat-label>New item:</mat-label>
+      <input matInput #itemValue placeholder="New item..." (keydown)="inputOnKeydown($event, itemValue.value, node)">
+    </mat-form-field>
+    <nb-icon icon="trash-outline" *ngIf="itemValue.value === ''"
+      (click)="deleteDefaultValue($event, itemValue.value, node)"></nb-icon>
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: getNoName" matTreeNodePadding class="d-none">
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: hasParentVisible" matTreeNodePadding
+    [ngClass]="styleType == 'income' ? 'node-lines-sub': 'node-lines-balance-sub'">
+    <div class="mat-tree-node ">
+      <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.item" *ngIf="node.expandable">
+        <mat-icon class="mat-icon-rtl-mirror">
+          <ng-container>
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </ng-container>
+        </mat-icon>
+      </button>
+      <button mat-icon-button disabled *ngIf="!node.expandable && node.level < 3">
+        <mat-icon class="mat-icon-rtl-mirror circle">
+          radio_button_unchecked
+        </mat-icon>
+      </button>
+      <button mat-icon-button disabled *ngIf="!node.expandable && node.level > 2">
+        <mat-icon class="mat-icon-rtl-mirror circle">
+          change_history
+        </mat-icon>
+      </button>
+      <ng-container *ngIf="!node.editMode">
+        <app-tree-drag-and-drop [node]="node" [styleType]="styleType" [flatNodeMap]="flatNodeMap"
+          (DragStartEmitter)="handleDragStart($event)" (DragOverEmitter)="handleDragOver($event)"
+          (DropEmitter)="handleDrop($event)" (DragEndEmitter)="handleDragEnd($event)"
+          (EditTotalEmitter)="AddTotal($event)"></app-tree-drag-and-drop>
+      </ng-container>
+      <ng-container *ngIf="node.editMode">
+        <mat-form-field appearance="fill">
+          <mat-label>Rename:</mat-label>
+          <input matInput #editInput placeholder="Enter a value" value="{{node.item}}"
+            (keydown)="inputOnKeydown($event, editInput.value, node)">
+        </mat-form-field>
+      </ng-container>
+    </div>
+    <app-tree-menu-options *ngIf="isEditable" [node]="node" [flatNodeMap]="flatNodeMap" [dataChange]="dataChange"
+      [dataSource]="dataSource" [treeType]="treeType" [treeControl]="treeControl" (AddModeEmitter)="addItem($event)"
+      (RenameModeEmitter)="renameItem($event)" (DeleteModeEmitter)="deleteItemDialog($event)"
+      (AddTotalModeEmitter)="addTotalItem($event)" (AddEditAccountsModeEmitter)="addEditAccountItem($event)"
+      (AddNewSubItemEmitter)="addSubItem($event)"></app-tree-menu-options>
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: showOptions" matTreeNodePadding
+    [ngClass]="styleType == 'income' ? 'node-lines': 'node-lines-balance'">
+    <div *ngIf="node.isTotal" class="total-node"></div>
+    <div *ngIf="node.isTotal && node.level == 0" style="margin-left: 19px;"></div>
+    <div *ngIf="node.level > 1" [ngClass]="styleType == 'income' ? 'child-node-lines': 'child-node-lines-balance'">
+    </div>
+    <div *ngIf="node.level > 2"
+      [ngClass]="styleType == 'income' ? 'child-node-lines-last': 'child-node-lines-last-balance'">
+    </div>
+    <div class="mat-tree-node ">
+      <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.item" *ngIf="node.expandable">
+        <mat-icon class="mat-icon-rtl-mirror">
+          <ng-container>
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </ng-container>
+        </mat-icon>
+      </button>
+      <button mat-icon-button disabled *ngIf="!node.expandable && node.level < 3 && !node.isTotal">
+        <mat-icon class="mat-icon-rtl-mirror circle">
+          radio_button_unchecked
+        </mat-icon>
+      </button>
+      <button mat-icon-button disabled *ngIf="!node.expandable && node.level > 2">
+        <mat-icon class="mat-icon-rtl-mirror circle">
+          change_history
+        </mat-icon>
+      </button>
+      <ng-container *ngIf="!node.editMode">
+        <app-tree-drag-and-drop [node]="node" [styleType]="styleType" [flatNodeMap]="flatNodeMap"
+          (DragStartEmitter)="handleDragStart($event)" (DragOverEmitter)="!node.isTotal ? handleDragOver($event) : null"
+          (DropEmitter)="handleDrop($event)" (DragEndEmitter)="handleDragEnd($event)"
+          (EditTotalEmitter)="AddTotal($event)"></app-tree-drag-and-drop>
+      </ng-container>
+      <ng-container *ngIf="node.editMode">
+        <mat-form-field appearance="fill">
+          <mat-label>Rename:</mat-label>
+          <input matInput #editInput placeholder="Enter a value" value="{{node.item}}"
+            (keydown)="inputOnKeydown($event, editInput.value, node)">
+        </mat-form-field>
+      </ng-container>
+    </div>
+
+    <app-tree-menu-options *ngIf="isEditable && (node.isTotal ? node.level > 1 : true)" [node]="node"
+      [flatNodeMap]="flatNodeMap" [dataChange]="dataChange" [dataSource]="dataSource" [treeType]="treeType"
+      [treeControl]="treeControl" (AddModeEmitter)="addItem($event)" (RenameModeEmitter)="renameItem($event)"
+      (DeleteModeEmitter)="deleteItemDialog($event)" (DeleteHeaderEmitter)="deleteHeaderDialog($event)"
+      (AddTotalModeEmitter)="addTotalItem($event)" (AddEditAccountsModeEmitter)="addEditAccountItem($event)"
+      (AddNewSubItemEmitter)="addSubItem($event)"></app-tree-menu-options>
+  </mat-tree-node>
+
+
+
+</mat-tree>
+
+<span #emptyItem></span>

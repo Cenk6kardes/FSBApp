@@ -1,0 +1,139 @@
+@import "src/styles.scss";
+
+* {
+  font-family: "Inter";
+}
+
+nb-select {
+  width: 10rem !important;
+}
+
+mat-card {
+  height: 118px;
+  border: 1px solid #cbd5e0 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  padding: 24px 34px;
+}
+
+.end {
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.content {
+  display: flex;
+}
+
+.margin-bottom {
+  margin-bottom: 1.5rem;
+}
+
+.margin-left {
+  margin-left: 1.5rem;
+}
+
+.margin-top {
+  margin-top: 1.5rem !important;
+}
+
+.font {
+  font-family: "Inter";
+  font-weight: 500;
+  background-color: #ffffff !important;
+  color: #2d3748 !important;
+}
+
+//
+::ng-deep #periodBreak nb-icon {
+  display: none;
+}
+
+::ng-deep .select-button[disabled] {
+  color: #222b45 !important;
+}
+
+//
+
+@media only screen and (min-width: 1500px) {
+  nb-select {
+    width: 100rem !important;
+  }
+}
+
+@media only screen and (max-width: 1500px) {
+  .end {
+    margin-left: 80px;
+  }
+}
+
+.icon {
+  border: none !important;
+  border-radius: 4px;
+  background-color: #E4F0F8 !important;
+  color: #3F78B8 !important;
+  width: 21px;
+  height: 21px;
+  margin-right: 5px;
+}
+
+.column-layout-start-center {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  flex-direction: column;
+}
+
+.full-row {
+  width: 100%
+}
+
+.print-year {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+  text-decoration: underline;
+}
+
+.print-section-base-font {
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.print-section-total-area {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  justify-content: end;
+}
+
+.print-section-result-area {
+  font-weight: bold;
+  font-size: 17px;
+  border-bottom: 1px solid black;
+}
+
+.print-section-base-font-normal {
+  font-size: 17px;
+  font-weight: normal;
+}
+
+.print-section-container-layout {
+  // display: grid;
+  // page-break-inside: avoid;
+  margin-left: 50px;
+  margin-right: 50px
+}
+
+.print-section-light-font {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.print-section-result-area-outer {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  height: 32px;
+}

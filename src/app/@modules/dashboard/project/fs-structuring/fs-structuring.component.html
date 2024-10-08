@@ -1,0 +1,22 @@
+<div class="column-layout-start page-margin">
+  <div class="row-layout-start">
+    <button [ngClass]="tabIndex === 0 ? 'active-tab' : 'non-active-tab'" mat-flat-button (click)="setTab(0)">
+      <p class="tab-font tab-font-fs">Balance Sheet</p>
+    </button>
+    <button [ngClass]="tabIndex === 1 ? 'active-tab' : 'non-active-tab'" mat-flat-button (click)="setTab(1)">
+      <p class="tab-font tab-font-fs">Income Statement</p>
+    </button>
+  </div>
+  <section class="col-lg-8 col-md-10 col-sm-12 balancesheet-tab section-tab page-margin--top">
+    <div *ngIf="tabIndex === 0" class="col-lg-12 col-md-10 col-sm-12 balancesheet-tab div-tab">
+      <ng-container>
+        <app-fs-balance-sheet></app-fs-balance-sheet>
+      </ng-container>
+    </div>
+    <div *ngIf="tabIndex === 1" class="col-lg-12 col-md-10 col-sm-12 balancesheet-tab div-tab">
+      <ng-container class="col-lg-12 col-md-10 col-sm-12 balancesheet-tab div-tab">
+        <app-fs-income-statement></app-fs-income-statement>
+      </ng-container>
+    </div>
+  </section>
+</div>

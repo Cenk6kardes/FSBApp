@@ -1,0 +1,112 @@
+<nb-card class="dialog" size="medium" [nbSpinner]="isloading">
+    <nb-card-header class="modal-title">
+        {{title}}
+    </nb-card-header>
+    <nb-card-body>
+        <div class="col-12">
+            <form [formGroup]="form">
+                <div class="form-group" formArrayName="userFormArray"
+                    *ngFor="let user of userFormArray.controls let i = index">
+                    <div [formGroupName]="i">
+                        <div class="form-group user-container" *ngIf="user">
+                            <div>
+                                <nb-user class="nb-user-row" size="medium" name="{{user.value.userNameArray}}"
+                                    color="#3A6CAD">
+                                </nb-user>
+                            </div>
+                            <div>
+                                <button nbButton status="basic" type="button" (click)="editUser(i)"
+                                    class="users-options"> <nb-icon icon="edit-outline" nbTooltip="Edit"></nb-icon>
+                                </button>
+                                <button nbButton status="basic" type="button" (click)="removeUser(i)"
+                                    class="users-options"> <nb-icon icon="trash-outline" nbTooltip="Delete"></nb-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hrdivider" *ngIf="userFormArray.length > 0">
+                    <div class="line"><mat-divider></mat-divider></div>
+                    <div class="text text-hint">Add another user</div>
+                    <div class="line"><mat-divider></mat-divider></div>
+                </div>
+
+                <div formGroupName="userForm">
+                    <div class="form-group">
+                        <label for="" class="label">Name:</label>
+                        <input nbInput fullWidth type="text" formControlName="userName" size="small"
+                            [status]="userName!.touched && !userName!.valid ? 'danger' : 'primary'"
+                            placeholder="{{title.split(' ')[1]}} First Name" />
+                        <span class="text-danger validations-span" *ngIf="!userName!.valid && userName!.touched">
+                            *Full Name is required
+                        </span>
+                        <span class="text-danger" *ngIf="userName!.errors?.['pattern']">
+                            *Please enter only alphanumeric values
+                        </span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="" class="label">Role:</label>
+                        <label for="lblType" class="label">{{searchPlHolder}}</label>
+                        <ng-select [items]="role" formControlName="role" bindLabel="name" bindValue="id"
+                            labelForId="lblType" placeholder="Search {{searchPlHolder}}...">
+                        </ng-select>
+                    </div>
+
+                    <div class="hrdivider">
+                        <div class="line"><mat-divider></mat-divider></div>
+                        <div class="text text-hint">Non-mandatory fields</div>
+                        <div class="line"><mat-divider></mat-divider></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="" class="label">Email:</label>
+                        <input nbInput fullWidth type="text" formControlName="email" size="small"
+                            [status]="email!.touched && !email!.valid ? 'danger' : 'primary'"
+                            placeholder="{{title.split(' ')[1]}} Email" />
+                        <span class="text-danger" *ngIf="email!.errors?.['pattern']">
+                            *Email format is not correct
+                        </span>
+                    </div>
+
+                    <div class="form-group margin-bottom-20">
+                        <label for="" class="label">Entity:</label>
+                        <label for="lblEntity" class="label">{{searchEntity}}</label>
+                        <ng-select [items]="optionsEntity" [multiple]="true" bindLabel="name" formControlName="entities"
+                            bindValue="id" [appendTo]="'body'" labelForId="lblEntity"
+                            placeholder="Search {{searchEntity}}...">
+                            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                                <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"
+                                    [ngModelOptions]="{standalone: true}" />
+                                {{item['name']}}
+                            </ng-template>
+                            <ng-template ng-multi-label-tmp let-items="items">
+                                <div class="ng-value" *ngFor="let item of (items ? items.slice(0,2) : [])">
+                                    {{item['name']}}
+                                </div>
+                                <div class="ng-value" *ngIf="items.length > 2">
+                                    <span class="ng-value-label">{{items.length - 2}} more...</span>
+                                </div>
+                            </ng-template>
+
+                        </ng-select>
+                    </div>
+                    <br>
+                    <div *ngIf="!isEdit && isAdmin">
+                        <!-- This option will be visible if the role is admin -->
+                        <label (click)="addNewUser()"> <nb-icon icon="plus-outline" nbTooltip="Add"></nb-icon>Add
+                            Another user</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </nb-card-body>
+    <nb-card-footer class="modal-footer d-flex justify-content-end">
+        <button class="transparent-button" nbButton (click)="close()">Close</button>
+        <button class="primary-button" nbButton (click)="onSave()" status="primary"
+            [disabled]="disableAddNewUser()">
+            {{isEdit ? 'Edit User' : 'Add New User(s)'}}
+        </button>
+    </nb-card-footer>
+</nb-card>

@@ -1,0 +1,16 @@
+<nb-card [nbSpinner]="(dashboardService.loadingStatus | async)!">
+    <nb-card-body>
+        <div>
+            <h3 class="statusTitle">Status Progress</h3>
+            <div class="statusBars">
+                <div *ngFor="let stat of statusBars" [ngClass]="stat.clickable ? 'status statusClickable' : 'status'" (click)="stat.clickable ? onChangeStatus(stat.label) : ''">
+                    <nb-progress-bar [ngClass]="stat.className" [value]="100" size="tiny"></nb-progress-bar>
+                    <div class="statusLabelLayout">
+                        <nb-icon *ngIf="stat.done" icon="checkmark-circle-2-outline"></nb-icon>
+                        <span>{{stat.label}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>

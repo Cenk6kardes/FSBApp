@@ -1,0 +1,54 @@
+<router-outlet (activate)='onActivate($event)' (deactivate)='onDeactivate($event)'>
+</router-outlet>
+
+<div *ngIf="!routerActive">
+  <div class='row'>
+    <h1 class='col-6'></h1>
+    <form class='form-horizontal col-6'>
+      <div class='form-group'>
+        <!-- <div class='col-3 col-sm-12 col-ml-auto'>
+             <nb-form-field>
+                 <input nbInput [formControl]='searchInput'
+                         type='text' id='globalSearch'
+                         (input)='onChangeSearch()'
+                         placeholder='Search' />
+                 <nb-icon nbSuffix icon="close" (click)="searchInput.setValue(''); onChangeSearch()"></nb-icon>
+             </nb-form-field>
+         </div> -->
+      </div>
+    </form>
+  </div>
+  <nb-tabset (changeTab)='onChangeTab($event)'>
+    <nb-tab class="tab-placement" tabTitle='Global Chart of Accounts' [tabId]='coaType.Global.toFixed()'
+      [active]="'1' === localStorage.getItem('tabid')">
+      <button class="primary-button" nbButton size="small" status="primary"
+        (click)="openDialog(this.coaGlobal.operationType.Add, 'Global COA')">
+        <nb-icon icon="plus" nbSuffix></nb-icon>
+        Add COA
+      </button>
+      <div class="table-wrapper">
+        <nb-card>
+          <app-chart-of-account #coaGlobal [type]='coaType.Global' (tableOutput)='setTableCoaSearch($event)'
+            (itemSelected)="doSomeWithSelected($event)">
+          </app-chart-of-account>
+        </nb-card>
+      </div>
+    </nb-tab>
+    <nb-tab class="tab-placement" tabTitle='Engagement Chart of Accounts' [tabId]='coaType.Engagement.toFixed()'
+      [active]="'2' === localStorage.getItem('tabid')">
+      <button class="primary-button" nbButton size="small" status="primary"
+        (click)="openDialog(this.coaEngagement.operationType.Add, 'Engagement COA')">
+        <nb-icon icon="plus" nbSuffix></nb-icon>
+        Add COA
+      </button>
+      <div class="table-wrapper">
+        <nb-card>
+          <app-chart-of-account #coaEngagement [type]='coaType.Engagement' (tableOutput)='setTableEngCoaSearch($event)'
+            (itemSelected)="doSomeWithSelected($event)">
+          </app-chart-of-account>
+        </nb-card>
+      </div>
+    </nb-tab>
+  </nb-tabset>
+
+</div>

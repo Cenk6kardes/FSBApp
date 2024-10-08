@@ -1,0 +1,15 @@
+  <mat-button class="checklist-leaf-node mat-tree-node"
+    [ngClass]="{'drop-above': dragNodeExpandOverArea === 'above' && dragNodeExpandOverNode === node,
+            'drop-below': dragNodeExpandOverArea === 'below' && dragNodeExpandOverNode === node,
+            'drop-center': dragNodeExpandOverArea === 'center' && dragNodeExpandOverNode === node, 
+            'node-btn0': node.level == 0 && styleType=='income', 'node-btn1': node.level == 1 && styleType=='income','node-btn2': node.level == 2 && styleType=='income',
+            'node-btn0-balance': node.level == 0 && styleType=='balance', 'node-btn1-balance': node.level == 1 && styleType=='balance','node-btn2-balance': node.level == 2 && styleType=='balance'}"
+    (change)="checklistSelection.toggle(node);" [draggable]="!node.isTotal" (dragstart)="eventDragStart($event, node);"
+    (dragover)="eventDragOver($event, node);" (drop)="eventDrop($event, node);" (dragend)="eventDragEnd($event);">
+    <div class="tooltip-div" [ngClass]="'node-style' + node.level" (dblclick)="eventEditTotal(node)">
+      <span *ngIf="node.isTotal" class="totalNode">{{(returnName(node) | uppercase)}}: $0</span>
+      <span *ngIf="!node.isTotal">{{returnName(node)}}</span>
+      <nb-icon *ngIf="!node.isTotal" class="icontooltip" icon="alert-circle" status="primary" nbTooltip="Select, drag and drop"
+        nbTooltipPlacement="right"></nb-icon>
+    </div>
+  </mat-button>

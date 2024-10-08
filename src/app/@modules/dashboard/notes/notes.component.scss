@@ -1,0 +1,100 @@
+nb-list {
+    height: 377px;
+}
+
+.note-date {
+    font-size: 12px;
+    line-height: 22px;
+    color: #718096;
+    font-weight: 500;
+}
+
+.note-description {
+    font-size: 14px;
+    margin-bottom: 0;
+    line-height: 22px;
+    font-size: 400;
+}
+
+.note-description__collapse {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 40px;
+}
+
+.note-edit__img {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    cursor: pointer;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    // box-shadow: inset 0 0 5px grey;
+    border-radius: 4px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #A0AEC0;
+    border-radius: 4px;
+    transition: .5s ease-in-out;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}
+
+.note-collapse {
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #3A6CAD;
+    display: inline-block;
+    z-index: 2;
+}
+.button-notes{
+    position: absolute;
+    right: 6%;
+    font-size: 20px;
+    top: 16px;
+    border: none;
+    background-color: #427DBF;
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    line-height: 15px;
+}
+
+nb-list-item {
+    cursor: pointer;
+}
+
+.margin-bottom-0{
+    margin-bottom: 0px;
+}
+
+.note-edit__box nb-icon{
+    margin-right: 10px;
+}
+
+.note-edit__box nb-card-header{
+    color: #2D3748;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 14px;
+    cursor: pointer;
+}
+
+.note-edit__box nb-card-header:hover {
+    background-color: #EDF2F7;
+}

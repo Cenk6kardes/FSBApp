@@ -1,0 +1,8 @@
+<nb-card class="statusDialogLayout">
+  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-body>{{ body }}</nb-card-body>
+  <nb-card-footer class="statusDialogFooter">
+    <button class="transparent-button" nbButton (click)="closeDialog()">Cancel</button>
+    <button class="primary-button" nbButton (click)="confirmDialog()" status="danger">Confirm</button>
+  </nb-card-footer>
+</nb-card>

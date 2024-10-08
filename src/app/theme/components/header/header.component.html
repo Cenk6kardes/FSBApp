@@ -1,0 +1,35 @@
+<div class="header-container headerNav">
+  <div class="logo-container">
+    <h1 *ngIf="urlLength <= 3" class="headerTitle">{{headerTitle}}</h1>
+    <div *ngIf="urlLength > 3" (click)="navigateBack()" class="backPage">
+      <mat-icon class="backArrow">arrow_back</mat-icon>
+      <span>Back to {{headerTitle}}</span>
+    </div>
+    <div *ngIf="elementName">
+      <nb-icon icon="chevron-right"></nb-icon>
+      {{elementName}}
+    </div>
+  </div>
+  <div class="header-container">
+    <nb-actions size="small">
+      <nb-action class="control-item">
+        <app-global-search></app-global-search>
+      </nb-action>
+      <nb-action class="control-item">
+        <app-notification (checkedWarning)="getWarningDetails($event)"></app-notification>
+      </nb-action>
+      <nb-action class="user-details">
+        <app-user-details></app-user-details>
+      </nb-action>
+    </nb-actions>
+  </div>
+</div>
+<div class="warningDiv" *ngIf="warningToastr && warningBox?.Message">
+  <nb-icon class="alert-circle-outline" nbPrefix icon="alert-circle-outline"></nb-icon>
+  <div>
+    <h4>System Warning Message</h4>
+    <p>{{warningBox.Message}}</p>
+  </div>
+  <nb-icon class="close-outline" nbPrefix icon="close-outline" *ngIf="warningBox.Dismissable"
+    (click)="dismissWarningForUser(userId)"></nb-icon>
+</div>

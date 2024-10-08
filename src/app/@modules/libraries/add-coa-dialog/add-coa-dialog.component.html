@@ -1,0 +1,84 @@
+<nb-card fullWidth class="dialog" [nbSpinner]="loading" [size]="type === coaType.Global ? 'small' : 'medium'">
+  <nb-card-header class="modal-title">{{title}}</nb-card-header>
+  <nb-card-body class="dialogCardBody">
+    <div class="col-12">
+      <form [formGroup]="coaForm">
+        <div formGroupName="globalForm">
+          <div class="form-group">
+            <label for="" *ngIf="!title.includes('Duplicate')">{{title.replace('Add', '')}} Name: </label>
+            <label for="" *ngIf="title.includes('Duplicate')">Name: </label>
+            <nb-form-field>
+              <input nbInput fullWidth type="text"
+                     formControlName="name"
+                     [status]="!coaForm.get('globalForm.name')!.valid && coaForm.get('globalForm.name')!.touched? 'danger': 'primary'"
+                     size="small"
+                     placeholder="{{title.split(' ')[1]}} name"
+                     [readonly]="isMapping"/>
+              <nb-icon *ngIf="!isMapping" nbSuffix icon="close" (click)="coaForm.get('globalForm.name')!.setValue('');">
+              </nb-icon>
+            </nb-form-field>
+
+            <span class="text-danger"
+                  *ngIf="coaForm.get('globalForm.name')!.errors?.['required'] && coaForm.get('globalForm.name')!.touched">
+                            *Name is required
+                        </span>
+            <span class="text-danger"
+                  *ngIf="coaForm.get('globalForm.name')!.touched
+                        && coaForm.get('globalForm.name')!.errors?.['pattern']">
+                        *Special characters are not allowed
+                    </span>
+            <span class="text-danger" *ngIf="isNameDuplicate">
+                            *Change name of {{title.split(' ')[1].slice(0, -1)}}
+                        </span>
+          </div>
+          <div class="form-group">
+            <label for="lblDuplicate">Duplicate COA:</label>
+            <ng-select [items]="duplicateOptions$ | async"
+                       formControlName="duplicateGlobalCoaId"
+                       bindLabel="name" bindValue="id"
+                       [multiple]="false"
+                       placeholder="Search EngagementsCOA's..."
+                       [readonly]="isMapping || isDuplicate || 
+                        (coaForm.get('engagementForm')?.get('globalCoaId')?.value && 
+                        coaForm.get('engagementForm')?.get('globalCoaId')?.value !== emptyGuid)"
+                       (change)="onDuplicateSelected($event)">
+            </ng-select>
+          </div>
+        </div>
+        <div formGroupName="engagementForm">
+          <div class="form-group" *ngIf="type === coaType.Engagement">
+            <label for="lbl">Engagement</label>
+            <ng-select [items]="engagementOptions$ | async"
+                       formControlName="engagements"
+                       bindLabel="name"
+                       bindValue="id"
+                       [multiple]="true"
+                       placeholder="Search engagements..."
+                       [readonly]="isDuplicate">
+            </ng-select>
+          </div>
+          <div class="form-group" *ngIf="type === coaType.Engagement">
+            <label for="lbl">GlobalCOA</label>
+            <ng-select [items]="globalCoaOptions$ | async"
+                       formControlName="globalCoaId"
+                       bindLabel="name"
+                       bindValue="id"
+                       [multiple]="false"
+                       placeholder="Search GlobalCOA's..."
+                       [readonly]="isMapping || isDuplicate || 
+                        (coaForm.get('globalForm')?.get('duplicateGlobalCoaId')?.value && 
+                        coaForm.get('globalForm')?.get('duplicateGlobalCoaId')?.value !== emptyGuid)">
+            </ng-select>
+          </div>
+        </div>
+      </form>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="modal-footer d-flex justify-content-end">
+    <button class="transparent-button" nbButton (click)="close()">Cancel</button>
+    <button class="primary-button" nbButton (click)="save()" status="primary"
+            [disabled]="(!coaForm.get('globalForm')?.valid || !coaForm.get('engagementForm')?.valid) || isNameDuplicate">
+      {{title}}
+    </button>
+  </nb-card-footer>
+</nb-card>

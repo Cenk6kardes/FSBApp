@@ -1,0 +1,111 @@
+<div class="column-layout-start">
+  <div class="summary-section-container row-layout-space-between full-width">
+    <div class="summary-box column-layout-start">
+      <div class="summary-box-header">Team Members</div>
+      <div class="column-layout-start user-list">
+        <nb-user class="h-user-icon" *ngFor="let user of teamMembers; let i = index"
+          name="{{returnProperty(teamMembers[i], 'name')}}" color="#718096" size="large"
+          title="{{returnProperty(teamMembers[i], 'time')}}"></nb-user>
+      </div>
+    </div>
+
+    <app-tb-upload-status></app-tb-upload-status>
+
+    <div class="column-layout-space-between summary-box-column-container">
+      <div class="summary-box-half row-layout-center-center">
+        <div class="column-layout-start">
+          <div class="half-summary-box-header">Due Date / TB Upload</div>
+          <div class="stepLayout" [formGroup]="dashboardTimeWidgetForm">
+            <input class="date-input" nbInput placeholder="Pick Date" formControlName="TBUploadDatePicker"
+              [nbDatepicker]="TBUploadDatePicker"
+              [status]="dashboardTimeWidgetForm.get([ 'TBUploadDatePicker'])!.touched && dashboardTimeWidgetForm.get(['TBUploadDatePicker'])!.invalid ? 'danger' : 'basic'">
+            <img class="calendar-icon" src="../../../../../assets/images/calendar.png" width="16px">
+            <span class="text-danger"
+              *ngIf="dashboardTimeWidgetForm.get([ 'TBUploadDatePicker'])!.invalid && dashboardTimeWidgetForm.get(['TBUploadDatePicker'])!.touched">*Period
+              Start Date is invalid</span>
+            <nb-datepicker (dateChange)="onPeriodStartChange($event)" #TBUploadDatePicker></nb-datepicker>
+          </div>
+        </div>
+        <div class="tb-upload-circle column-layout-center-center">
+          <div class="tb-upload-circle-progress column-layout-center-center"
+            [ngStyle]="{'background': tbUploadProgress}">
+            <div class="tb-upload-circle-inner column-layout-center-center" *ngIf="calculateOverdue(tbUploadDate,true)">
+              <div class="circle-information-number">{{daysLeftTBUpload}}</div>
+              <div class="circle-information-inform">days left</div>
+            </div>
+            <div class="tb-upload-circle-inner column-layout-center-center"
+              *ngIf="!calculateOverdue(tbUploadDate,true)">
+              <div class="circle-information-number-alert">{{calculateOverdue(tbUploadDate, false)}}</div>
+              <div class="circle-information-inform-alert">Days Overdue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-box-half row-layout-center-center">
+        <div class="column-layout-start">
+          <div class="half-summary-box-header">Due Date / FS Review</div>
+          <div class="stepLayout" [formGroup]="dashboardTimeWidgetForm">
+            <input class="date-input" nbInput placeholder="Pick Date" formControlName="FsReviewDatePicker"
+              [nbDatepicker]="FsReviewDatePicker"
+              [status]="dashboardTimeWidgetForm.get([ 'FsReviewDatePicker'])!.touched && dashboardTimeWidgetForm.get(['FsReviewDatePicker'])!.invalid ? 'danger' : 'basic'">
+            <img class="calendar-icon" src="../../../../../assets/images/calendar.png" width="16px">
+            <span class="text-danger"
+              *ngIf="dashboardTimeWidgetForm.get([ 'FsReviewDatePicker'])!.invalid && dashboardTimeWidgetForm.get(['FsReviewDatePicker'])!.touched">*Period
+              Start Date is invalid</span>
+            <nb-datepicker (dateChange)="onPeriodStartChange($event)" #FsReviewDatePicker></nb-datepicker>
+          </div>
+        </div>
+        <div class="tb-upload-circle column-layout-center-center">
+          <div class="tb-upload-circle-progress column-layout-center-center"
+            [ngStyle]="{'background': fsReviewProgress}">
+            <div class="tb-upload-circle-inner column-layout-center-center"
+              *ngIf="calculateOverdue(fsReviewDate, true)">
+              <div class="circle-information-number">{{daysLeftFSReview}}</div>
+              <div class="circle-information-inform">days left</div>
+            </div>
+            <div class="tb-upload-circle-inner column-layout-center-center"
+              *ngIf="!calculateOverdue(fsReviewDate, true)">
+              <div class="circle-information-number-alert">{{calculateOverdue(fsReviewDate, false)}}</div>
+              <div class="circle-information-inform-alert">Days Overdue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-activity-header">Project Activity</div>
+  <nb-card>
+    <ngx-table class="full-width" [configuration]="configuration" [nbSpinner]="loadingUsers" [data]="data"
+      [columns]="columns" [pagination]="pagination">
+    </ngx-table>
+    <mat-paginator [length]="paginationTotalItems" [pageSize]="10" (page)="paginationEvent($event)"
+      [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons>
+    </mat-paginator>
+
+    <ng-template #userTpl let-row>
+      <nb-user name="{{row.userName}}" color="#718096" title="{{row.email}}" class="h-user-icon table-user"></nb-user>
+    </ng-template>
+
+    <ng-template #timeTpl let-row>
+      <span class="light-row">{{ row.createdDate | date: "MMM d, HH:mm" }}</span>
+    </ng-template>
+
+    <ng-template #statusTpl let-row>
+      <div class="ng-star-inserted status-positions"> <img
+          src="../../../../assets/images/{{ row.projectStatus | lowercase }}.svg" alt="" class="filter-icons" />
+        <div>{{ getStatusName(row.projectStatus) }}</div>
+      </div>
+    </ng-template>
+
+    <ng-template #DescTpl let-row>
+      <span>{{ row.activityDescription}}</span>
+    </ng-template>
+
+    <ng-template #FileTpl let-row>
+      <span class="light-row">{{ row.fileAttached}}</span>
+    </ng-template>
+  </nb-card>
+
+</div>

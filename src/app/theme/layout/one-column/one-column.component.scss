@@ -1,0 +1,79 @@
+@import '../../styles/themes';
+// @import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+@include nb-install-component() {
+  .menu-sidebar ::ng-deep .scrollable {
+    padding-top: nb-theme(layout-padding-top);
+  }
+
+  nb-layout-header ::ng-deep {
+    nav {
+      background-color: #F7FAFC;
+      box-shadow: none;
+      padding: 0;
+    }
+  }
+  
+  nb-layout ::ng-deep{
+    .columns{
+      background-color:#F7FAFC ;
+    }    
+  }
+}
+
+.menu-sidebar{
+  background-color: #2D3748;
+  max-width: 230px ;
+ }
+
+//  .sidebar-toggle{
+//   padding-bottom:1.25rem;
+//   padding-top:1.25rem;
+//   position:relative;
+//   right: 5px;
+//   color:#CBD5E0;52 
+//   cursor: pointer;
+//  }
+
+#logos{
+ margin-top: 30px;
+ margin-bottom: 42px; 
+ cursor: pointer;
+}
+
+#title{
+  margin-left:0.5rem;
+}
+
+.menu-sidebar{
+  background-color: #2D3748;
+  max-width: 230px ;
+ }
+
+//  .sidebar-toggle{
+//   padding-bottom:1.25rem;
+//   padding-top:1.25rem;
+//   position:relative;
+//   right: 5px;
+//   color:#CBD5E0;52 
+//   cursor: pointer;
+//  }
+
+#logos{
+ margin-top: 30px;
+ margin-bottom: 42px; 
+ cursor: pointer;
+}
+
+#title{
+  margin-left:0.5rem;
+}
+
+::ng-deep app-header {
+  flex-wrap: wrap !important;
+}
+
+::ng-deep nav {
+  height: auto !important;
+}

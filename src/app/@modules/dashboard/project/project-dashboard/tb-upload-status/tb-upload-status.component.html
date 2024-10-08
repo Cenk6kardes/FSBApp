@@ -1,0 +1,53 @@
+<div class="summary-box column-layout-start"
+  [ngClass]="TBUploadStatusType === 'Half Year' || TBUploadStatusType === 'Annual' ? 'green-bg' : ''">
+  <div class="row-layout-start-center">
+    <div class="summary-box-header">TB Upload Status</div>
+    <div *ngIf="TBUploadStatusType === 'Monthly'" class="summary-header-information">Monthly</div>
+    <div *ngIf="TBUploadStatusType === 'Quarterly'" class="summary-header-information">Quarterly</div>
+    <div *ngIf="TBUploadStatusType === 'Half Year'" class="summary-header-information">Half Year</div>
+    <div *ngIf="TBUploadStatusType === 'Annual'" class="summary-header-information">Annually</div>
+  </div>
+
+  <div *ngIf="TBUploadStatusType === 'Monthly'" class="row-layout-space-around full-width">
+    <div class="column-layout-start" *ngIf="columnStatus != undefined">
+      <div *ngFor="let month of columnStatus.slice(0,6)" class="row-layout-start"><img
+          src="{{month.selected ? '../../../../../../assets/images/vector.png': '../../../../../../assets/images/vector-non-selected.png'}}">
+        <p class="month-font">{{Months[month.key]}}</p>
+      </div>
+    </div>
+
+    <div class="column-layout-start" *ngIf="columnStatus != undefined">
+      <div *ngFor="let month of columnStatus.slice(6,12)" class="row-layout-start"><img
+          src="{{month.selected ? '../../../../../../assets/images/vector.png': '../../../../../../assets/images/vector-non-selected.png'}}">
+        <p class="month-font">{{Months[month.key]}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="TBUploadStatusType === 'Quarterly'" class="row-layout-start full-width">
+    <div class="column-layout-start " *ngIf="columnStatus != undefined">
+      <div *ngFor="let quarter of columnStatus" class="row-layout-start quarterly-class"><img
+          src="{{quarter.selected ? '../../../../../../assets/images/vector.png': '../../../../../../assets/images/vector-non-selected.png'}}">
+        <p class="month-font">{{Quarters[quarter.key]}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="TBUploadStatusType === 'Half Year'">
+    <div class="column-layout-start " *ngIf="columnStatus != undefined">
+      <div *ngFor="let halfyear of columnStatus" class="row-layout-start quarterly-class"><img
+          src="{{halfyear.selected ? '../../../../../../assets/images/vector.png': '../../../../../../assets/images/vector-non-selected.png'}}">
+        <p class="month-font">{{HalfYear[halfyear.key]}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="TBUploadStatusType === 'Annual'">
+    <div class="column-layout-space-between" *ngIf="columnStatus != undefined">
+      <div *ngFor="let annualTime of columnStatus" class="row-layout-start quarterly-class"><img
+          src="{{annualTime.selected ? '../../../../../../assets/images/vector.png': '../../../../../../assets/images/vector-non-selected.png'}}">
+        <p class="month-font">{{AnnualTime[annualTime.key]}}</p>
+      </div>
+    </div>
+  </div>
+</div>

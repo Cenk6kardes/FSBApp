@@ -1,0 +1,121 @@
+<div (click)="toggleNotifications()" class="notificationBell">
+  <mat-icon [matBadge]="showBadge ? (notificationCount === 0 ? null : notificationCount) : null" matBadgeColor="warn">
+    notifications</mat-icon>
+</div>
+
+<nb-card *ngIf="showNotifications" class="notificationCard" [nbSpinner]="loading">
+  <nb-card-header class="notificationHeader">
+    <h2>Notifications</h2>
+    <span *ngIf="!showNotificationForm && !showWarningForm" (click)="markAsRead()">Mark All as Read</span>
+    <nb-icon (click)="closeForm()" *ngIf="showNotificationForm || showWarningForm" class="formCloseIcon"
+      icon="close-outline"></nb-icon>
+  </nb-card-header>
+
+  <nb-card-header class="newNotification">
+    <nb-list class="notificationList" *ngIf="!showNotificationForm && !showWarningForm">
+      <nb-list-item *ngIf="notificationList.length < 1">No Results</nb-list-item>
+      <nb-list-item *ngFor="let notify of notificationList; let i = index"
+        [ngClass]="notify.Readed === true ? 'readed':''">
+        <nb-user size="medium" name="{{notify.Sender}}" class="h-user-icon" color="#718096" onlyPicture>
+        </nb-user>
+        <div class="message-flex">
+          <p class="list-p-header">{{notify.Sender}} | {{notify.CreationDateTime | date: 'MMM dd, HH:mm'  }}</p>
+          <p class="list-p-text " [ngClass]="collapsableItem === i ? '' : 'list-p-text-hide'">
+            {{notify.Message}}</p>
+        </div>
+        <div class="d-flex">
+          <nb-icon nbPrefix icon="chevron-down-outline" (click)="collapseItem(i)"
+            [ngClass]="collapsableItem === i ? 'collapse-rotate' : ''"></nb-icon>
+          <nb-icon nbPrefix icon="trash-outline" (click)="deleteNotification(notify.Id)"></nb-icon>
+        </div>
+      </nb-list-item>
+    </nb-list>
+
+    <form *ngIf="showNotificationForm" [formGroup]="notificationForm" (ngSubmit)="saveNotification()">
+      <div class="createNotifyTitle">
+        <h3>Create Notification</h3>
+      </div>
+      <span>Text of the Note</span>
+      <textarea nbInput fullWidth formControlName="message" rows="5"
+        [status]="notificationForm.get('message')!.touched && !notificationForm.get('message')!.valid ? 'danger' : 'primary'"></textarea>
+      <span class="text-danger" *ngIf="message.value.length > 200">
+        Message length must not exceed 200 characters
+      </span>
+      <span class="text-right" [ngClass]="message.value.length > 200 ? 'text-danger' : ''">
+        {{message.value.length || 0}} of 200 characters
+      </span>
+      <span>Entity Name</span>
+      <nb-select placeholder="Select Entity" formControlName="entities" multiple [nbSpinner]="entityLoading">
+        <nb-option *ngFor="let entity of entityList$ | async" [value]=entity.id>{{entity.name}}</nb-option>
+      </nb-select>
+      <span>Share with</span>
+      <nb-select placeholder="Select User" formControlName="shareWith" [nbSpinner]="userLoading">
+        <nb-option *ngFor="let user of userList$ | async" [value]=user.id>{{user.userName}}</nb-option>
+      </nb-select>
+      <div class="submitForm">
+        <button class="positiveButton" type="submit" [disabled]="!notificationForm.valid" mat-flat-button
+          color="primary">Save and Share</button>
+        <button (click)="closeForm()" type="button" mat-stroked-button>Cancel</button>
+      </div>
+    </form>
+
+    <form *ngIf="showWarningForm" [formGroup]="warningForm">
+      <div class="createNotifyTitle">
+        <h3>Create Warning</h3>
+      </div>
+      <span>Warning Text</span>
+      <textarea nbInput fullWidth formControlName="message" rows="5"
+        [status]="warningForm.get('message')!.touched && !warningForm.get('message')!.valid ? 'danger' : 'primary'"></textarea>
+      <span class="text-danger" *ngIf="warningMessage.value.length > 500">
+        Message length must not exceed 500 characters
+      </span>
+      <span class="text-right" [ngClass]="warningMessage.value.length > 500 ? 'text-danger' : ''">
+        {{warningMessage.value.length || 0}} of 500 characters
+      </span>
+      <span>Warning will expire</span>
+      <nb-radio-group [(value)]="expireType" name="reactive-forms-group" (valueChange)="changeFormCondition()">
+        <nb-radio value="1"><span class="radio-span" nbTooltip="(After 24 hrs)" nbTooltipPlacement="right">Cancel
+            Automatically <span
+              *ngIf="updateWarning.expirationDate && expireType === '1' && updateWarning.cancelAutomatically">({{toLocalTimeConverter(updateWarning.expirationDateUtc) | date:'MM/dd/yyyy h:mm a'}})</span></span>
+        </nb-radio>
+        <nb-radio value="2"><span class="radio-span">Set Day and Time</span></nb-radio>
+      </nb-radio-group>
+      <div [ngClass]="expireType === '1' ? 'disable-date' : 'enable-date'">
+        <input nbInput placeholder="Pick Date" formControlName="expirationDate" [nbDatepicker]="expirationDate"
+          readonly>
+        <nb-datepicker #expirationDate></nb-datepicker>
+      </div>
+      <div class="margin-t-5" [ngClass]="expireType === '1' ? 'disable-input' : ''">
+        <input nbInput type="text" [nbTimepicker]="hourPicker" class="hour-picker" formControlName="hourDate" #setHour
+          placeholder="Select Time" readonly />
+        <nb-timepicker #hourPicker singleColumn [step]="30" (onSelectTime)="TransformHour($event)">
+        </nb-timepicker>
+        <nb-select placeholder="Select Time Zone" class="timezone-picker" formControlName="timeZone"
+          [nbSpinner]="timeZoneLoading">
+          <nb-option *ngFor="let timezone of timeZoneList$ | async" [value]=timezone.id>{{timezone.displayName}}
+          </nb-option>
+        </nb-select>
+      </div>
+      <nb-checkbox status="basic" formControlName="dismissable">Allow users to dismiss this notice</nb-checkbox>
+      <nb-checkbox status="basic" formControlName="lockoutNonAdminUsers">Lock out non-admins</nb-checkbox>
+      <div class="submitForm">
+        <button type="submit" mat-flat-button color="warn" *ngIf="!updateWarning.message" (click)="saveWarning()"
+          [disabled]="!warningForm.valid ">Activate</button>
+        <button type="submit" mat-flat-button color="warn" *ngIf="updateWarning.message" (click)="updateWarnings()"
+          [disabled]="!warningForm.valid">Update</button>
+        <button type="submit" mat-flat-button color="primary" *ngIf="updateWarning.message" (click)="cancelWarnings()"
+          [disabled]="!warningForm.valid">Remove</button>
+        <button (click)="closeForm()" type="button" mat-stroked-button>Cancel</button>
+      </div>
+    </form>
+  </nb-card-header>
+
+  <nb-card-footer class="cardFooter" *ngIf="!showNotificationForm && !showWarningForm">
+    <button class="positiveButton" (click)="changeFormType(1)" mat-flat-button color="primary">Create
+      New</button>
+    <button class="positiveButton" (click)="changeFormType(2)" mat-stroked-button color="warn"
+      *nbIsGranted="['create', 'warning']">{{updateWarning.message ? 'Edit Warning' : 'Create Warning'}}</button>
+    <!-- <button (click)="closeNotifications()" mat-stroked-button>Hide</button> -->
+    <span (click)="clearAll()">Clear All</span>
+  </nb-card-footer>
+</nb-card>

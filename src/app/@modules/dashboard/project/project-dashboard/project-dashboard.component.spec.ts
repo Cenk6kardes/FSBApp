@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ProjectDashboardComponent } from './project-dashboard.component';
+
+describe('ProjectSettingsComponent', () => {
+  let component: ProjectDashboardComponent;
+  let fixture: ComponentFixture<ProjectDashboardComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ProjectDashboardComponent ]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(ProjectDashboardComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

@@ -1,0 +1,33 @@
+<nb-card class="project-count__box" ngClass="{{ clickedClass }}" *ngIf="type === 'filter'">
+  <nb-card-body class="project-count__body">
+    <h5 class="project-count__header">{{ content.header }}</h5>
+    <div class="d-inline">
+      <h2 class="d-inline-flex project-count__text">{{ content.count }}</h2>
+      <!-- <span class="overview-count">
+        <img src="../../../assets/images/{{ content.arrow }}.svg" alt="" />
+        <span>{{ content.diff }}</span>
+      </span> -->
+    </div>
+    <img src="../../../assets/images/{{ content.icon }}.svg" alt="" class="filter-icons" />
+  </nb-card-body>
+</nb-card>
+
+<nb-card class="project-status__box" *ngIf="type === 'status'">
+  <nb-card-body class="project-status__body">
+    <div class="d-flex project-status__content margin-bottom-16">
+      <h5 class="project-status__header">{{ statusContent.header }}</h5>
+      <span
+        (click)="setFilter({category: statusContent.header, text: 'Overdue'}, statusContent.header ? statusContent.header : '')"
+        class="project-status__overdue" *ngIf="statusContent.overdue">{{ statusContent.overdue }} Overdue</span>
+    </div>
+    <div *ngFor="let item of statusContent.contents; let i = index" class="margin-bottom-16">
+      <div class="d-flex project-status__content">
+        <span class="project-status__status">{{ item.text }}</span>
+        <span class="project-status__percent">{{ item.count }} / <b>{{ item.percent | number:'1.0-0'  }}%</b></span>
+      </div>
+      <nb-progress-bar (click)="setFilter(item, statusContent.header ? statusContent.header : '')"
+        style="cursor: pointer;" [value]="item.percent" [ngClass]="'bar-section-' + index + i" size="tiny">
+      </nb-progress-bar>
+    </div>
+  </nb-card-body>
+</nb-card>

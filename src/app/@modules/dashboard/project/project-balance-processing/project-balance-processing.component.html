@@ -1,0 +1,91 @@
+<div>
+  <mat-card class="margin-bottom">
+    <mat-card-content class="content">
+      <div class="selectt">
+        <label>Balance Source</label>
+        <br />
+        <nb-select [(selected)]="tempBalanceSource" [disabled]="(_dashService.completedStatus | async)"
+          (selectedChange)="changeBalanceSource(tempBalanceSource)">
+          <nb-option class="font" *ngFor="let balance of balances" [value]="balance">
+            {{ balance }}</nb-option>
+        </nb-select>
+      </div>
+      <div class="selectt margin-left">
+        <label>Period Break </label>
+        <br />
+
+        <nb-select [(selected)]="periodBreak" id="periodBreak" disabled="true">
+          <nb-option class="font" *ngFor="let period of periods" [value]="period" [disabled]="true">
+            {{ period }}
+          </nb-option>
+        </nb-select>
+      </div>
+
+      <div *ngIf="balanceSource == balances[0]" class="end">
+        <button mat-button printSectionId="print-section" ngxPrint (click)="printActionSave()"
+          [useExistingCss]="true"><svg class="print-icon"></svg> Print</button>
+        <button mat-button (click)="collapseTree()"> <nb-icon class="icon"
+            icon="collapse-outline"></nb-icon>Collapse</button>
+        <button mat-button (click)="expandTree()"> <nb-icon class="icon" icon="expand-outline"></nb-icon>Expand</button>
+      </div>
+
+      <div *ngIf="balanceSource == balances[1]" class="end">
+        <button mat-button [nbContextMenu]="options" nbContextMenuTag="download">
+          <svg class="download-tb-icon"></svg> Download TB Template
+        </button>
+        <button mat-button *ngIf="!(_dashService.completedStatus | async)" [nbContextMenu]="options"
+          nbContextMenuTag="upload">
+          <svg class="upload-tb-icon"></svg> Upload TB
+        </button>
+        <button mat-button printSectionId="print-section" ngxPrint (click)="printActionSave()" [useExistingCss]="true">
+          <svg class="print-icon"></svg> Print
+        </button>
+        <button mat-button (click)="collapseTree()"> <nb-icon class="icon"
+            icon="collapse-outline"></nb-icon>Collapse</button>
+        <button mat-button (click)="expandTree()"> <nb-icon class="icon" icon="expand-outline"></nb-icon>Expand</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <app-project-balance-table (getData)="onDataTypeChanged($event)" (selectTab)="onTabSelected($event)"
+    *ngIf="periodBreak" [balanceSource]="balanceSource" [periodBreak]="periodBreak" [projectType]="rollForward"
+    [projectID]="projectID"></app-project-balance-table>
+</div>
+
+
+<div style="display:none" class="column-layout-start-start" id="print-section">
+  <div class="column-layout-start-center full-row">
+    <p class="print-section-base-font">{{this.projectName}}</p>
+    <p class="print-section-light-font" style="margin-top:-8px;">{{this.activeTab}} for Year Ended December 31 st</p>
+    <div class="print-year">
+      <div class="print-section-base-font-normal" style="margin-right:50px; margin-bottom:-20px;">{{financialYear}}
+      </div>
+    </div>
+  </div>
+  <div *ngFor="let item of writeDocArr" class="print-section-container-layout print-wrapper">
+    <div *ngIf="!item.istotal && item.level === 0">
+      <p class="print-section-base-font">{{item.name}}</p>
+    </div>
+    <div *ngIf="!item.istotal && item.level === 1" style="margin-top: -15px">
+      <p [ngStyle]="{'margin-left': (item.level*20)+'px' }" class="print-section-base-font">{{item.name}}</p>
+    </div>
+    <div *ngIf="!item.istotal && item.level === 2" class="row-layout-space-between" style="margin-top: -15px">
+      <p [ngStyle]="{'margin-left': (item.level*20)+'px' }" class="print-section-base-font-normal">{{item.name}}</p>
+      <p class="print-section-base-font-normal">{{numberWithCommas(item.total)}}</p>
+    </div>
+    <div *ngIf="item.istotal">
+      <div *ngIf="item.name !== 'Net Profit' && item.name !== 'Net Profit (Loss)'" class="print-section-total-area">
+        <p class="print-section-base-font" style="margin-right: 5px;">{{item.name}}:</p>
+        <div class="print-section-result-area-outer">
+          <p class="print-section-result-area">{{numberWithCommas(getTotal(item))}}</p>
+        </div>
+      </div>
+      <div *ngIf="item.name === 'Net Profit' || item.name === 'Net Profit (Loss)'" class="print-section-total-area">
+        <p class="print-section-base-font" style="margin-right: 5px;">{{item.name}}:</p>
+        <div class="print-section-result-area-outer">
+          <p class="print-section-result-area">{{numberWithCommas(getDifference())}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

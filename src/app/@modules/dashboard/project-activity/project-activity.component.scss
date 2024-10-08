@@ -1,0 +1,53 @@
+.note-date {
+    font-size: 12px;
+    line-height: 22px;
+    color: #718096;
+    font-weight: 500;
+}
+
+.note-description {
+    font-size: 14px;
+    margin-bottom: 0;
+    line-height: 22px;
+    font-size: 400;
+}
+
+.activity-status {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    background-color: #73ABDA;
+}
+
+.myActivityItemList {
+    height: 377px;
+}
+
+.myActivityItem {
+    text-align: initial !important;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    // box-shadow: inset 0 0 5px grey;
+    border-radius: 4px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #A0AEC0;
+    border-radius: 4px;
+    transition: .5s ease-in-out;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}

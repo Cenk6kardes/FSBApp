@@ -1,0 +1,89 @@
+@import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '/src/app/theme/styles/themes.scss';
+
+@include nb-install-component() {
+    nb-card.dialog {
+        width: 30vw;
+
+        [nbInput].status-primary {
+            margin: 5px 0 0px 0;
+            color: #2D3748;
+            font-size: 14px;
+            line-height: 22px;
+            font-weight: 400;
+            border-color: #CBD5E0;
+        }
+
+        [nbInput]:focus {
+            border-color:#4A5568
+        }
+
+        label{
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 22px;
+        }
+
+        [nbButton].status-primary {
+            background-color: #3A6CAD;
+            color: #fff;
+            text-transform: none;
+        }
+
+        [nbButton].status-primary:hover{
+            background-color: #4279c2;
+            border-color: #4279c2;
+        }
+
+        [nbButton].status-primary[disabled] {
+            background-color: #8f9bb33d;
+            border-color: #8f9bb33d;
+            color: #8f9bb37a;
+        }
+
+        [nbButton].status-basic {
+            background-color: transparent;
+            border: 1px solid #CBD5E0;
+            color: #2D3748;
+            text-transform: none;
+        }
+
+        nb-card-footer {
+            button {
+                margin-right: 0.5rem;
+            }
+        }
+
+        nb-card-body {
+            .hrdivider {
+                position: relative;
+                width: 100%;
+            }
+
+            .hrdivider span {
+                position: absolute;
+                justify-self: center;
+                top: -11px;
+                left: 33%;
+                background: #fff;
+                padding: 0 1rem;
+                font-style: italic;
+                font-size: 0.8rem;
+            }
+        }
+        
+    }
+}
+
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+.float-right {
+    float: right;
+}
+
+nb-card-header {
+    font-size: 23px;
+}

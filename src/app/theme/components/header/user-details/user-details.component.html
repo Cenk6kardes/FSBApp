@@ -1,0 +1,48 @@
+<div class="avatar" [nbPopover]="user" [nbPopoverTrigger]="trigger" nbPopoverPlacement="bottom">
+  <nb-user size="medium" class="h-user-icon" [name]="userName" [title]="userTitle" color="#718096" [showTitle]="false">
+  </nb-user>
+  <nb-icon icon="chevron-down-outline"></nb-icon>
+</div>
+<ng-template #user>
+  <div *ngIf="false">
+    <mat-card>
+      <mat-card-content (click)="setUserDemo('Global Admin')">
+        <nb-user class="h-user-icon" size="large" name="Elizabeth Gurr" title="Global Admin" color="#718096">
+        </nb-user>
+      </mat-card-content>
+      <!-- <mat-card-footer>
+            <button class="btnLogout" (click)="userLogout()" mat-flat-button color="warn">{{"logout" | uppercase}}</button>
+        </mat-card-footer> -->
+    </mat-card>
+    <mat-card>
+      <mat-card-content (click)="setUserDemo('System Admin')">
+        <a>
+          <nb-user class="h-user-icon" size="large" name="Faina Rolstone" title="System Admin" color="#718096">
+          </nb-user>
+        </a>
+      </mat-card-content>
+      <!-- <mat-card-footer>
+            <button class="btnLogout" (click)="userLogout()" mat-flat-button color="warn">{{"logout" | uppercase}}</button>
+        </mat-card-footer> -->
+    </mat-card>
+    <mat-card>
+      <mat-card-content (click)="setUserDemo('Reviewer')">
+        <nb-user class="h-user-icon" size="large" name="Erwin Doubrava" title="Reviewer" color="#718096">
+        </nb-user>
+      </mat-card-content>
+      <!-- <mat-card-footer>
+            <button class="btnLogout" (click)="userLogout()" mat-flat-button color="warn">{{"logout" | uppercase}}</button>
+        </mat-card-footer> -->
+    </mat-card>
+  </div>
+  <mat-card>
+    <!-- <mat-card-content (click)="setUserDemo('Preparer')"> -->
+    <mat-card-content>
+      <nb-user class="h-user-icon" size="large" [name]="userName" [title]="userRole" color="#718096">
+      </nb-user>
+    </mat-card-content>
+    <mat-card-footer>
+      <button class="btnLogout" (click)="userLogout()" mat-flat-button color="warn">{{"logout" | uppercase}}</button>
+    </mat-card-footer>
+  </mat-card>
+</ng-template>

@@ -1,0 +1,9 @@
+@import "src/styles.scss";
+.content-button {
+    flex: auto;
+    flex-direction: row;
+
+    button{
+        margin-right: 0.5rem;
+    }
+}

@@ -1,0 +1,114 @@
+<div class="row" [nbSpinner]="loading">
+  <div class="col-7">
+    <nb-card>
+      <nb-card-body class="setting-card">
+        <div class="row ">
+          <div class="col-4">
+            <label class="label">Entity*:</label>
+            <p class="setting-text" *ngIf="projectDetail.entity; else empty">{{ projectDetail.entity.name}}</p>
+
+          </div>
+          <div class="col-4 offset-2">
+            <label class="label">Financial Year*: </label>
+            <p class="setting-text">{{projectDetail.financialYear}}</p>
+          </div>
+          <div class="col-4">
+            <label class="label">Period Start Date*: </label>
+            <p class="setting-text">{{projectDetail.periodStartDate | date: 'MM / dd / yyyy'}}</p>
+          </div>
+          <div class="col-4 offset-2">
+            <label class="label">Period End Date*: </label>
+            <p class="setting-text">{{projectDetail.periodEndDate | date: 'MM / dd / yyyy' }}</p>
+          </div>
+          <div class="col-4">
+            <label class="label">Project Type*: </label>
+            <p class="setting-text" *ngIf="projectDetail.projectType; else empty">
+              {{projectDetail.projectType.name}}</p>
+            <ng-template #empty>
+              <p class="setting-text">-</p>
+            </ng-template>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+    <form [formGroup]="settingsForm" (ngSubmit)="submitForm()">
+      <nb-card>
+        <nb-card-body>
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label class="label">Period Break*:</label>
+                <nb-select placeholder="Select" formControlName="periodBreak" size="medium" scrollStrategy="reposition"
+                  (ngModelChange)="formType()">
+                  <nb-option *ngFor="let period of periodBreak$ | async" [value]=period.id>{{period.name}}</nb-option>
+                </nb-select>
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <nb-card>
+        <nb-card-body>
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label class="label">COA*:</label>
+                <nb-select placeholder="Select" formControlName="coa" *ngIf="engCoaList$"
+                  (ngModelChange)="optGroupChange($event)" size="medium" scrollStrategy="reposition">
+                  <nb-option *ngFor="let coa of coaType$?.slice(2)" group="coa" [value]=coa.id>{{coa.name}}
+                  </nb-option>
+                  <nb-option-group title="Global COA">
+                    <nb-option *ngFor="let globalCoa of globalCoaList$ | activityCheck" group="globalCoa"
+                      [value]=globalCoa.id>
+                      {{globalCoa.name}}
+                    </nb-option>
+                  </nb-option-group>
+                  <nb-option-group title="Engagement COA">
+                    <nb-option *ngFor="let engagementCoa of engCoaList$ | activityCheck" group="engagementCoa"
+                      [value]=engagementCoa.id>
+                      {{engagementCoa.name}}</nb-option>
+                  </nb-option-group>
+                </nb-select>
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <nb-card *nbIsGranted="['update','project']">
+        <nb-card-body>
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label class="label">Due Date (TB Upload)*:</label>
+                <input nbInput placeholder="Pick Date" formControlName="dueDateTb" [nbDatepicker]="dueDateTb"
+                  [status]="settingsForm.get('dueDateTb')!.invalid && settingsForm.get('dueDateTb')!.touched ? 'danger' : 'basic'">
+                <nb-datepicker #dueDateTb (dateChange)="onTBUploadChange($event)" [min]="tbUploadMinDate">
+                </nb-datepicker>
+                <span class="text-danger"
+                  *ngIf="settingsForm.get('dueDateTb')!.invalid && settingsForm.get('dueDateTb')!.touched">*Due Date (TB
+                  Upload) is
+                  invalid</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label class="label">Due Date (FS Review)*: </label>
+                <input nbInput placeholder="Pick Date" formControlName="dueDateFs" [nbDatepicker]="dueDateFs"
+                  [status]="settingsForm.get('dueDateFs')!.invalid && settingsForm.get('dueDateFs')!.touched ? 'danger' : 'basic'">
+                <nb-datepicker #dueDateFs (dateChange)="onFSReviewChange($event)" [min]="fsReviewMinDate">
+                </nb-datepicker>
+              </div>
+              <span class="text-danger"
+                *ngIf="settingsForm.get('dueDateFs')!.invalid && settingsForm.get('dueDateFs')!.touched">*Due Date (FS
+                Review) is invalid</span>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+      <div *ngIf="!projectStatusCompleted" class="form-btns">
+        <button type="button" mat-stroked-button (click)="cancel()">Cancel</button>
+        <button type="submit" mat-flat-button color="primary" [disabled]="!(settingsForm.valid)">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

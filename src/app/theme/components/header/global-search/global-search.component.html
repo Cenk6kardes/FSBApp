@@ -1,0 +1,16 @@
+<nb-form-field>
+  <input [formControl]="searchField" [(ngModel)]="searchValue" placeholder="Search Project" type="text"
+    [nbAutocomplete]="autoControl" nbInput>
+
+  <nb-icon *ngIf="!searchValue" icon="search-outline" nbSuffix></nb-icon>
+  <button *ngIf="searchValue" (click)="searchValue=''" nbSuffix nbButton ghost>
+    <nb-icon icon="close-outline"></nb-icon>
+  </button>
+</nb-form-field>
+
+<nb-autocomplete #autoControl (selectedChange)="onSelectionChange($event)">
+  <nb-option *ngFor="let project of filteredProjects$ | async" [value]="project"
+    [disabled]="project.name === 'No results found' || project.name === 'Start typing..'">
+    {{ project.name }}
+  </nb-option>
+</nb-autocomplete>

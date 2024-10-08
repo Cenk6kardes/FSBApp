@@ -1,0 +1,8 @@
+<nb-card>
+  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-body [innerHTML]="text"></nb-card-body>
+  <nb-card-footer>
+    <button class="transparent-button" nbButton (click)="close()">Cancel</button>
+    <button class="primary-button" nbButton (click)="save()" status="danger">Confirm</button>
+  </nb-card-footer>
+</nb-card>

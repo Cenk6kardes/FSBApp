@@ -1,0 +1,39 @@
+@import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '/src/app/theme/styles/themes.scss';
+@import "src/styles.scss";
+
+@include nb-install-component() {
+  .mapping {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+
+    .map-text {
+      flex: none;
+      order: 1;
+      flex-grow: 0;
+    }
+  }
+}
+
+.toggle-label {
+  margin-top: 12px !important;
+}
+
+.more-icon {
+  color: $grey-400;
+}
+
+
+.success-light-button{
+  background-color: #63d5be !important;
+  border: 1px solid #63d5be !important;
+  margin-right: 2px;
+}
+
+.remove-light-button{
+  background-color: #ef93a2 !important;
+  border: 1px solid #ef93a2 !important;
+}

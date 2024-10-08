@@ -1,0 +1,1195 @@
+<div class="row" [nbSpinner]="loading">
+  <div class="margin-bottom group">
+    <button *ngIf="!(dashboardService.completedStatus | async)!" mat-raised-button (click)="saveUpdates()">
+      Save
+    </button>
+    <mat-checkbox [(ngModel)]="priorYearBalance" (ngModelChange)="priorYearCheckbox()"
+      [disabled]="(dashboardService.completedStatus | async)! || disablePriorYearBox" color="primary" [ngClass]="
+        (dashboardService.completedStatus | async)! ? 'bg' : 'margin-left bg'
+      ">Show Prior Year
+      Balance</mat-checkbox>
+  </div>
+  <div class="container">
+    <table *ngIf="balanceSource == IBalanceSource.ManualEntry" mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="item" sticky>
+        <th class="overflow" mat-header-cell *matHeaderCellDef>
+          <div>
+            <button mat-button (click)="tabChange(true)" [ngClass]="toggleTabs ? 'active' : ''">
+              Balance Sheet
+            </button>
+            <button mat-button class="margin-left" (click)="tabChange(false)" [ngClass]="!toggleTabs ? 'active' : ''">
+              Income Statement
+            </button>
+          </div>
+        </th>
+        <td class="overflow" mat-cell *matCellDef="let data" [attr.aria-level]="data.level"
+          [ngClass]="toggleTabs ? 'node-lines-balance': 'node-lines'">
+          <div *ngIf="data.level > 1 && !hasParentVisible(data)"
+            [ngClass]="toggleTabs ? 'child-node-lines-balance': 'child-node-lines'">
+          </div>
+          <div *ngIf="data.level > 2 && !hasParentVisible(data)"
+            [ngClass]="toggleTabs ? 'child-node-lines-last-balance': 'child-node-lines-last'">
+          </div>
+          <div *ngIf="hasParentVisible(data)" [ngClass]="toggleTabs ? 'node-lines-balance-sub': 'node-lines-sub'"></div>
+          <button mat-icon-button [style.display]="!data.expandable ? 'none' : 'inline-block'"
+            [style.marginLeft.px]="data.level * 40" (click)="treeControl.toggle(data)">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{ treeControl.isExpanded(data) ? "expand_more" : "chevron_right" }}
+            </mat-icon>
+          </button>
+          <button mat-icon-button disabled *ngIf="!data.expandable && data.level < 3 && !data.isTotal"
+            [style.marginLeft.px]="data.level * 40">
+            <mat-icon class="mat-icon-rtl-mirror circle">
+              radio_button_unchecked
+            </mat-icon>
+          </button>
+          <button mat-icon-button disabled *ngIf="!data.expandable && data.level > 2 && !data.isTotal"
+            [style.marginLeft.px]="data.level * 40">
+            <mat-icon class="mat-icon-rtl-mirror circle">
+              change_history
+            </mat-icon>
+          </button>
+          <button mat-icon-button disabled *ngIf="data.isTotal" [ngClass]="data.level >1 ? 'pushRight': ''">
+            <mat-icon class="mat-icon-rtl-mirror circle">
+            </mat-icon>
+          </button>
+          <span [ngClass]="data.isTotal ? 'totalItem': ''">
+            {{ getAccountNumber(data)? getAccountNumber(data) + "-"+ data.item : data.item }}
+          </span>
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+          TOTAL
+        </th>
+        <td mat-cell *matCellDef="let data" class="othercolumns total-bg" [attr.aria-level]="data.level"
+          [ngClass]="toggleTabs ? 'balance': 'income'">
+          <span *ngIf="data.isTotal || (data.level > 0 && !data.expandable)  "
+            [ngClass]="periodBreak === IPeriodBreak.Monthly?'monthly':'' ">
+            {{ calculateRows(data.columns) }}
+          </span>
+          <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"
+            [ngClass]="periodBreak === IPeriodBreak.Monthly?'monthly':'' ">
+            {{calculateAccountantRow(data)}}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalpy">
+        <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+          TOTAL <br> PY
+        </th>
+        <td mat-cell *matCellDef="let data" class="othercolumns total-bg" [attr.aria-level]="data.level"
+          [ngClass]="toggleTabs ? 'balance': 'income'">
+          <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)"
+            [ngClass]="periodBreak === IPeriodBreak.Monthly?'monthly':'' ">
+            {{data.pyColumns[0].amount | currency:'':'':'1.0-0' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container *ngIf="periodBreak === IPeriodBreak.Monthly">
+
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JAN
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[0].amount"
+                (blur)="valueEntered(0, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JAN <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="3">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            FEB
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[1].amount"
+                (blur)="valueEntered(1, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(1, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(1,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="2">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            FEB <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[2].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="5">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAR
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[2].amount"
+                (blur)="valueEntered(2, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(2, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(2,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="4">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAR <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[3].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="7">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            APR
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[3].amount"
+                (blur)="valueEntered(3, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(3, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(3,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="6">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            APR <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[4].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="9">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[4].amount"
+                (blur)="valueEntered(4, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(4, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(4,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="8">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAY <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[5].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="11">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUN
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[5].amount"
+                (blur)="valueEntered(5, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(5, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(5,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="10">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUN <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[6].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="13">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUL
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[6].amount"
+                (blur)="valueEntered(6, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(6, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(6,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="12">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUL <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[7].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="15">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            AUG
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[7].amount"
+                (blur)="valueEntered(7, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(7, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(7,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="14">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            AUG <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[8].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="17">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            SEP
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[8].amount"
+                (blur)="valueEntered(8, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(8, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(8,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="16">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            SEP <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[9].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="19">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            OCT
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[9].amount"
+                (blur)="valueEntered(9, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(9, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(9,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="18">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            OCT <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[10].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="21">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            NOV
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[10].amount"
+                (blur)="valueEntered(10, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(10, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(10,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="20">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            NOV <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[11].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="23">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            DEC
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" class="monthly" nbInput [(ngModel)]="data.columns[11].amount"
+                (blur)="valueEntered(11, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(11, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(11,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="22">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            DEC <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[12].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="periodBreak === IPeriodBreak.Quarterly">
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q1
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable  ">
+              <input appCurrency [maxDigits]="12" nbInput [(ngModel)]="data.columns[0].amount"
+                (blur)="valueEntered(0, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal ">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q1 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="3">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q2
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" nbInput [(ngModel)]="data.columns[1].amount"
+                (blur)="valueEntered(1, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal">{{ calculateCol(1, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(1,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="2">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q2 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[2].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="5">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q3
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" nbInput [(ngModel)]="data.columns[2].amount"
+                (blur)="valueEntered(2, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal">{{ calculateCol(2, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(2,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="4">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q3 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[3].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="7">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q4
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" nbInput [(ngModel)]="data.columns[3].amount"
+                (blur)="valueEntered(3, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal">{{ calculateCol(3, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(3,data,true)}}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="6">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q4 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[4].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="periodBreak === IPeriodBreak.HalfYearly">
+
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jan to Jun
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" nbInput [(ngModel)]="data.columns[0].amount"
+                (blur)="valueEntered(0, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jan to Jun <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="3">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jul to Dec
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" nbInput [(ngModel)]="data.columns[1].amount"
+                (blur)="valueEntered(1, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal">{{ calculateCol(1, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(1,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="2">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jul to Dec <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[2].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+      </ng-container>
+      <ng-container *ngIf="periodBreak === IPeriodBreak.Annually">
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Yearly
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <ng-container *ngIf="!data.isTotal && data.level > 0 && !data.expandable ">
+              <input appCurrency [maxDigits]="12" nbInput [(ngModel)]="data.columns[0].amount"
+                (blur)="valueEntered(0, data)" (focus)="setDefaultValue($event)"
+                [disabled]="(dashboardService.completedStatus | async)!" />
+            </ng-container>
+            <span *ngIf="data.isTotal">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Yearly <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns input-border" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" [ngClass]="getNoName(row)? 'hide' : ' ' "></tr>
+    </table>
+
+    <table *ngIf="balanceSource == IBalanceSource.TrialBalanceUpload" mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="item" sticky>
+        <th class="overflow" mat-header-cell *matHeaderCellDef>
+          <div>
+            <button mat-button (click)="tabChange(true)" [ngClass]="toggleTabs ? 'active' : ''">
+              Balance Sheet
+            </button>
+            <button mat-button class="margin-left" (click)="tabChange(false)" [ngClass]="!toggleTabs ? 'active' : ''">
+              Income Statement
+            </button>
+          </div>
+        </th>
+        <td class="overflow" mat-cell *matCellDef="let data" [attr.aria-level]="data.level"
+          [ngClass]="toggleTabs ? 'node-lines-balance': 'node-lines'">
+          <div *ngIf="data.level > 1 && !hasParentVisible(data)"
+            [ngClass]="toggleTabs ? 'child-node-lines-balance': 'child-node-lines'">
+          </div>
+          <div *ngIf="data.level > 2 && !hasParentVisible(data)"
+            [ngClass]="toggleTabs ? 'child-node-lines-last-balance': 'child-node-lines-last'">
+          </div>
+          <div *ngIf="hasParentVisible(data)" [ngClass]="toggleTabs ? 'node-lines-balance-sub': 'node-lines-sub'"></div>
+          <button mat-icon-button [style.display]="!data.expandable ? 'none' : 'inline-block'"
+            [style.marginLeft.px]="data.level * 40" (click)="treeControl.toggle(data)">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{ treeControl.isExpanded(data) ? "expand_more" : "chevron_right" }}
+            </mat-icon>
+          </button>
+
+          <button mat-icon-button disabled *ngIf="!data.expandable && data.level < 3 && !data.isTotal"
+            [style.marginLeft.px]="data.level * 40">
+            <mat-icon class="mat-icon-rtl-mirror circle">
+              radio_button_unchecked
+            </mat-icon>
+          </button>
+          <button mat-icon-button disabled *ngIf="!data.expandable && data.level > 2 && !data.isTotal"
+            [style.marginLeft.px]="data.level * 40">
+            <mat-icon class="mat-icon-rtl-mirror circle">
+              change_history
+            </mat-icon>
+          </button>
+          <button mat-icon-button disabled *ngIf="data.isTotal" [ngClass]="data.level >1 ? 'pushRight': ''">
+            <mat-icon class="mat-icon-rtl-mirror circle">
+            </mat-icon>
+          </button>
+          <span [ngClass]="data.isTotal ? 'totalItem': ''">
+            {{ getAccountNumber(data)? getAccountNumber(data) + "-"+ data.item : data.item }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+          TOTAL
+        </th>
+        <td mat-cell *matCellDef="let data" class="othercolumns total-bg" [attr.aria-level]="data.level"
+          [ngClass]="toggleTabs ? 'balance': 'income'">
+          <span *ngIf="data.isTotal || (data.level > 0 && !data.expandable)"
+            [ngClass]="periodBreak === IPeriodBreak.Monthly?'monthly':'' ">
+            {{ calculateRows(data.columns) }}
+          </span>
+          <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"
+            [ngClass]="periodBreak === IPeriodBreak.Monthly?'monthly':'' ">
+            {{calculateAccountantRow(data)}} </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalpy">
+        <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+          TOTAL <br> PY
+        </th>
+        <td mat-cell *matCellDef="let data" class="othercolumns total-bg" [attr.aria-level]="data.level"
+          [ngClass]="toggleTabs ? 'balance': 'income'">
+          <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)"
+            [ngClass]="periodBreak === IPeriodBreak.Monthly?'monthly':'' ">
+            {{data.pyColumns[0].amount | currency:'':'':'1.0-0' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container *ngIf="periodBreak === IPeriodBreak.Monthly">
+
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JAN
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable " class="monthly">
+              {{ data.columns[0].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JAN <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="3">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            FEB
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[1].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(1, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(1,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="2">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            FEB <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[2].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="5">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAR
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[2].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(2, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(2,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="4">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAR <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[3].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="7">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            APR
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[3].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(3, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(3,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="6">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            APR <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[4].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="9">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[4].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(4, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(4,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="8">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            MAY <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns " [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[5].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="11">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUN
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[5].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(5, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(5,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="10">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUN <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[6].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="13">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUL
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[6].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(6, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(6,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="12">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            JUL <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns " [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[7].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="15">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            AUG
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[7].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(7, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(7,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="14">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            AUG <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns " [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[8].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="17">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            SEP
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[8].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(8, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(8,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="16">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            SEP <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns " [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[9].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="19">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            OCT
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[9].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(9, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(9,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="18">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            OCT <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[10].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="21">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            NOV
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[10].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(10, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(10,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="20">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            NOV <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[11].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="23">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            DEC
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable" class="monthly">
+              {{ data.columns[11].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal" class="monthly">{{ calculateCol(11, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable" class="monthly">
+              {{calculateCol(11,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="22">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            DEC <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)" class="monthly">
+              {{data.pyColumns[12].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="periodBreak === IPeriodBreak.Quarterly">
+
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q1
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable">
+              {{ data.columns[0].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q1 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="3">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q2
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable">
+              {{ data.columns[1].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal">{{ calculateCol(1, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(1,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="2">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q2 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[2].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="5">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q3
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable">
+              {{ data.columns[2].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal">{{ calculateCol(2, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(2,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="4">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q3 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[3].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="7">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q4
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable">
+              {{ data.columns[3].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal">{{ calculateCol(3, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(3,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="6">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Q4 <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[4].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="periodBreak === IPeriodBreak.HalfYearly">
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jan to Jun
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable">
+              {{ data.columns[0].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jan to Jun <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="3">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jul to Dec
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable">
+              {{ data.columns[1].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal">{{ calculateCol(1, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(1,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="2">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Jul to Dec <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[2].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+      </ng-container>
+      <ng-container *ngIf="periodBreak === IPeriodBreak.Annually">
+        <ng-container matColumnDef="1">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Yearly
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="!data.isTotal && data.level > 0 && !data.expandable">
+              {{ data.columns[0].amount | currency:'':'':'1.0-0' }}</span>
+            <span *ngIf="data.isTotal">{{ calculateCol(0, data,false) }} </span>
+            <span *ngIf="!data.isTotal && data.level === 2 && data.expandable"> {{calculateCol(0,data,true)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="0">
+          <th mat-header-cell *matHeaderCellDef class="othercolumns font-weight">
+            Yearly <br> PY
+          </th>
+          <td mat-cell *matCellDef="let data" class="othercolumns" [attr.aria-level]="data.level"
+            [ngClass]="toggleTabs ? 'balance': 'income'">
+            <span *ngIf="(data.level > 0 && !data.expandable) || (data.level === 2 && data.expandable)">
+              {{data.pyColumns[1].amount | currency:'':'':'1.0-0' }} </span>
+          </td>
+        </ng-container>
+
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" [ngClass]="getNoName(row)? 'hide' : '' "></tr>
+    </table>
+  </div>
+</div>

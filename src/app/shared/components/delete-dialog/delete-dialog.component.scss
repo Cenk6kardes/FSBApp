@@ -1,0 +1,24 @@
+@import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '/src/app/theme/styles/themes.scss';
+
+@include nb-install-component() {
+  nb-card.dialog {
+    width: 40vw;
+    height: fit-content;
+
+    nb-card-footer {
+      button {
+        // margin-right: 0.5rem;
+      }
+    }
+
+    // ng-select:hover{
+    //     width: 36vw;
+    //     position: fixed;
+    // }
+  }
+}
+ul {
+  margin-top: 5px;
+}

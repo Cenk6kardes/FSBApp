@@ -1,0 +1,87 @@
+.account-container {
+    padding: 5px;
+    margin: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+nb-card-body {
+  max-height: 60vh;
+  overflow-y: scroll;
+  }
+
+.account-divs {
+    padding: 5px;
+    align-items: flex-start;
+}
+
+.account-divs-actions {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.alert-danger {
+    color: #721c24;
+    background: #f8d7da;
+    border-color: #f5c6cb;
+    margin-bottom: 5px;
+}
+
+.container-error-message {
+    padding: 3px;
+}
+
+.middle-container {
+    text-align: center;
+    margin: 20px;
+    position: relative;
+  }
+  .line-center {
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    text-align: center;
+  }
+  .middle-container:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    border-top: 1px solid #E2E8F0;
+    background: #E2E8F0;
+    width: 100%;
+    transform: translateY(-50%);
+  }
+  .text-middle-line {
+    padding-left: 5px;
+    margin: 0px auto;
+    width: 100px;
+    height: 20px;
+    background: #ffff;
+    p {
+        color: #A0AEC0;
+    }
+  }
+
+  label.new-account {
+    color: #427DBF;
+    font-size: 14px;
+    margin-left: 15px;
+    cursor: pointer;
+  
+    nb-icon {
+      font-size: 14px;
+      color: #427DBF;
+    }
+  }
+
+  button {
+    margin-left: 5px;
+  }
+
+  

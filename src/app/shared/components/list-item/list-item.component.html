@@ -1,0 +1,18 @@
+<span class="note-date">Aug 29, 2022</span>
+<p
+  class="note-description"
+  (click)="collapseItem(index)"
+  [ngClass]="collapsableItem == index ? '' : 'note-description__collapse'"
+>
+  <b>This is title.</b> New FY 2022 added for the Lorem Ipsum is not simply
+  random text. It has roots in a piece of classical Latin literature from 45 BC,
+  making it over 2000 years old. Richard McClintock, a Latin professor at
+  Hampden-Sydney College in Virginia.
+  <span class="note-collapse"
+    ><img src="../../../../assets/images/collapse-img.svg" alt="" />
+    Collapse</span
+  >
+</p>
+<div class="note-edit__img">
+  <img src="../../../../assets/images/three_dot.svg" alt="" />
+</div>
